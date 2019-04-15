@@ -5,8 +5,6 @@ export class MissionEntity {
   title: string;
   reward: number;
   active: boolean;
-  @Exclude()
   createdAt: Date;
-  @Exclude()
   createdBy = 'user';
 }
