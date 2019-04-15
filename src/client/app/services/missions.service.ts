@@ -11,7 +11,13 @@ export class MissionsService {
 
   getMissions() {
     return this.httpClient
-      .get<{data: Mission[]}>('http://localhost:3000/missions')
+      .get<{ data: Mission[] }>('http://localhost:3000/missions')
+      .pipe(map(response => response.data));
+  }
+
+  getMissionById(id: number) {
+    return this.httpClient
+      .get<{ data: Mission }>(`http://localhost:3000/missions/${id}`)
       .pipe(map(response => response.data));
   }
 }

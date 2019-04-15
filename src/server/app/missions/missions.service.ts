@@ -8,4 +8,8 @@ export class MissionsService {
   getMissions() {
     return this.missionsRepository.getList();
   }
+
+  getMission(id: number) {
+    return this.missionsRepository.get(id);
+  }
 }

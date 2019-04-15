@@ -9,7 +9,7 @@
 
 <ion-content>
   <ion-list>
-    <ion-item *ngFor="let mission of (missions | async)">
+    <ion-item *ngFor="let mission of (missions | async)" (click)="openMission(mission.id)">
       <ion-label>
         <h2>{{ mission.title }}</h2>
         <p>{{ mission.reward | currency }} - {{ mission.active ? 'Active' : 'Complete'}}</p>

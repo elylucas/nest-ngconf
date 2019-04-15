@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { MissionsService } from './missions.service';
 
 @Controller('missions')
@@ -8,5 +8,10 @@ export class MissionsController {
   @Get()
   async getMissions() {
     return this.missionsService.getMissions();
+  }
+
+  @Get(':id')
+  async getMission(@Param('id') id: number) {
+    return this.missionsService.getMission(id);
   }
 }
