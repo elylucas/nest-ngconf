@@ -5,6 +5,6 @@ export class MissionEntity {
   title: string;
   reward: number;
   active: boolean;
-  createdAt: Date;
+  createdAt = new Date();
   createdBy = 'user';
 }
