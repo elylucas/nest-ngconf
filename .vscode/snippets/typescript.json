@@ -18,7 +18,7 @@
       "  constructor(private missionsRepository: MissionsRepository) {}",
       "",
       "  getMissions() {",
-      "    return this.missionsRepository.getMissions();",
+      "    return this.missionsRepository.getList();",
       "  }",
       "}"
     ],
@@ -40,30 +40,37 @@
     "description": "gsr-nest-missions-controller"
   },
   "gsr-angular-missions-service": {
-    "prefix": "gsr-angular-missions-service",
-    "body": [
-      "export class MissionsService {",
-      "  constructor(private httpClient: HttpClient) {}",
-      "",
-      "  getMissions() {",
-      "    return this.httpClient.get<Mission[]>('http://localhost:3000/missions');",
-      "  }",
-      "}"
-    ],
-    "description": "gsr-angular-missions-service"
-  },
+		"prefix": "gsr-angular-missions-service",
+		"body": [
+			"export class MissionsService {",
+			"  constructor(private httpClient: HttpClient) {}",
+			"",
+			"  getMissions() {",
+			"    return this.httpClient",
+			"      .get<{data: Mission[]}>('http://localhost:3000/missions')",
+			"      .pipe(map(response => response.data));",
+			"  }",
+			"}"
+		],
+		"description": "gsr-angular-missions-service"
+	},
   "gsr-nest-data-interceptor": {
-    "prefix": "gsr-nest-data-interceptor",
-    "body": [
-      "export class DataInterceptor implements NestInterceptor {",
-      "  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {",
-      "    return next.handle().pipe(map(data => classToPlain(data)));",
-      "  }",
-      "}",
-      ""
-    ],
-    "description": "gsr-nest-data-interceptor"
-  },
+		"prefix": "gsr-nest-data-interceptor",
+		"body": [
+			"export class DataInterceptor implements NestInterceptor {",
+			"  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {",
+			"    return next.handle().pipe(",
+			"      map(data => {",
+			"        return {",
+			"          data: classToPlain(data)",
+			"        };",
+			"      })",
+			"    );",
+			"  }",
+			"}"
+		],
+		"description": "gsr-nest-data-interceptor"
+	},
   "gsr-angular-homepage-ts": {
     "prefix": "gsr-angular-homepage-ts",
     "body": [
