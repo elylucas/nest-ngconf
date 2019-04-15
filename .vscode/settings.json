@@ -1,0 +1,6 @@
+{
+  "vsicons.presets.angular": false,
+  "vsicons.presets.nestjs": false,
+  "vsicons.projectDetection.disableDetect": true,
+  "typescript.tsdk": "node_modules/typescript/lib"
+}

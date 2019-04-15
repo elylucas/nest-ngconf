@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "target": "es6",
+    "sourceMap": true,
+    "outDir": "../../dist/server",
+    "baseUrl": "./",
+  },
+  "exclude": ["node_modules", "test", "**/*.spec.ts"]
+}
