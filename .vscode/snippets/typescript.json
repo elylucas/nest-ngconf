@@ -86,15 +86,25 @@
     ],
     "description": "gsr-angular-homepage-ts"
   },
-  "gsr-nest-getmission-service": {
-    "prefix": "gsr-nest-getmission-service",
-    "body": [
-      "getMission(id: number) {",
-      "  return this.missionsRepository.getMission(id);",
-      "}"
-    ],
-    "description": "gsr-nest-getmission-service"
-  },
+	"gsr-nest-missions-service-get": {
+		"prefix": "gsr-nest-missions-service-get",
+		"body": [
+			"getMission(id: number) {",
+			"  return this.missionsRepository.get(id);",
+			"}"
+		],
+		"description": "gsr-nest-missions-service-get"
+	},
+	"gsr-nest-missions-controller-get": {
+		"prefix": "gsr-nest-missions-controller-get",
+		"body": [
+			" @Get(':id')",
+			"  async getMission(@Param('id') id: number) {",
+			"    return this.missionsService.getMission(id);",
+			"  }"
+		],
+		"description": "gsr-nest-missions-controller-get"
+	},
   "gsr-nest-data-pipe": {
     "prefix": "gsr-nest-data-pipe",
     "body": [
@@ -108,15 +118,17 @@
     ],
     "description": "gsr-nest-data-pipe"
   },
-  "gsr-angular-service-getmissionbyid": {
-    "prefix": "gsr-angular-service-getmissionbyid",
-    "body": [
-      "getMissionById(id: number) {",
-      "  return this.httpClient.get<Mission[]>(`http://localhost:3000/missions/\\${id\\}`);",
-      "}"
-    ],
-    "description": "gsr-angular-service-getmissionbyid"
-  },
+  "gsr-angular-missions-service-getbyid": {
+		"prefix": "gsr-angular-missions-service-getbyid",
+		"body": [
+			"getMissionById(id: number) {",
+			"  return this.httpClient",
+			"    .get<{data: Mission}>(`http://localhost:3000/missions/${id}`)",
+			"    .pipe(map(response => response.data));",
+			"}"
+		],
+		"description": "gsr-angular-missions-service-getbyid"
+	},
   "gsr-angular-homepage-openMission": {
 		"prefix": "gsr-angular-homepage-openMission",
 		"body": [

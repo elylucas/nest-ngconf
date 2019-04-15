@@ -42,8 +42,10 @@ export class MissionsRepository {
       .get('missions')
       .find(x => x.id === id)
       .value();
-    dbRecord.createdAt = new Date(dbRecord.createdAt);
-    return plainToClass(MissionEntity, dbRecord, { ignoreDecorators: true });
+    if (dbRecord) {
+      dbRecord.createdAt = new Date(dbRecord.createdAt);
+      return plainToClass(MissionEntity, dbRecord, { ignoreDecorators: true });
+    }
   }
 
   async create(mission: MissionEntity) {
