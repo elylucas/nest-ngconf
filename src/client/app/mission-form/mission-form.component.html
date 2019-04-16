@@ -14,7 +14,7 @@
     <form (submit)="submit(mission)" #form>
       <ion-item *ngIf="mission.id">
         <ion-label>Id: {{ mission.id }}</ion-label>
-        <ion-icon name="trash" color="danger" slot="end"></ion-icon>
+        <ion-icon name="trash" color="danger" slot="end" (click)="delete(mission)"></ion-icon>
       </ion-item>
       <ion-item>
         <ion-label position="floating">Title</ion-label>

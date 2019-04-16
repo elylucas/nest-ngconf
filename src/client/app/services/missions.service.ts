@@ -20,4 +20,22 @@ export class MissionsService {
       .get<{ data: Mission }>(`http://localhost:3000/missions/${id}`)
       .pipe(map(response => response.data));
   }
+
+  createMission(mission: Mission) {
+    return this.httpClient
+      .post<Mission>(`http://localhost:3000/missions`, mission)
+      .toPromise().catch(response => { throw response.error; });
+  }
+
+  updateMission(mission: Mission) {
+    return this.httpClient
+      .put<Mission>(`http://localhost:3000/missions/${mission.id}`, mission)
+      .toPromise().catch(response => { throw response.error; });
+  }
+
+  deleteMission(mission: Mission) {
+    return this.httpClient
+      .delete<Mission>(`http://localhost:3000/missions/${mission.id}`)
+      .toPromise().catch(response => { throw response.error; });
+  }
 }
