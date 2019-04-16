@@ -1,6 +1,16 @@
 # Amazing Backends for Angular Devs Workshop with NestJS
 
-In this workshop, we 
+In this workshop, we will cover how to build out a full-stack TypeScript application using Angular, Ionic, and NestJS. As Angular devs, you already know how powerful TypeScript is. We will take the power of TypeScript and learn how to use it on the backend.
+
+## Meet Nest
+
+[NestJS](https://nestjs.com) (just Nest from here on out), is a Node framework meant to build server-side applications. Not only is it a framework, but it is also a platform to meet many backend application needs, like writing APIs, building microservices, or doing real-time communications through web sockets. For us Angular devs, it is a great solution to write our backends with because it fits in so well with the rest of our ecosystem.
+
+## Meet Ionic
+
+[Ionic](https://ionicframework.com) is a UI framework for building mobile first web applications. Ionic provides around 100 UI widgets that give your app a native user experience and lets you code with the technologies you know and love, like Angular, TypeScript, and HTML/CSS. With Ionic, you can create native iOS, Android, and Progressive Web Apps with one code base.
+
+We will use Ionic in this workshop as our UI library. No previous experience with Ionic is required, though.
 
 ## Prerequisites
 
