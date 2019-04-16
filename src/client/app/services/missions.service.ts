@@ -24,18 +24,33 @@ export class MissionsService {
   createMission(mission: Mission) {
     return this.httpClient
       .post<Mission>(`http://localhost:3000/missions`, mission)
-      .toPromise().catch(response => { throw response.error; });
+      .toPromise().catch(this.handleError);
   }
 
   updateMission(mission: Mission) {
     return this.httpClient
       .put<Mission>(`http://localhost:3000/missions/${mission.id}`, mission)
-      .toPromise().catch(response => { throw response.error; });
+      .toPromise().catch(this.handleError);
   }
 
   deleteMission(mission: Mission) {
     return this.httpClient
       .delete<Mission>(`http://localhost:3000/missions/${mission.id}`)
-      .toPromise().catch(response => { throw response.error; });
+      .toPromise().catch(this.handleError);
+  }
+
+  handleError(response: any) {
+    const { error } = response;
+    if (error.statusCode === 400) {
+      let message = '';
+      error.message.forEach((msg: any) => {
+        const keys = Object.keys(msg.constraints);
+        keys.forEach(k => {
+          message += msg.constraints[k] + '<br />';
+        });
+      });
+      throw { message };
+    }
+    throw error;
   }
 }
