@@ -32,7 +32,8 @@
 <h2 id="prerequisites"><a class="header-link" href="#prerequisites"></a>Prerequisites</h2>
 <p>You need a recent version of Node installed (this is tested with Node 10 but might work with Node 8). Visit <a href="https://nodejs.org/en/">Node&#39;s website</a> to install it.</p>
 <p>To begin, clone the starter app from Github:</p>
-<pre class="hljs"><code>git <span class="hljs-built_in">clone</span> https://github.com/elylucas/nest-ngconf.git</code></pre><p>Go into the <code>nest-ngconf</code> directory and install dependencies:</p>
+<pre class="hljs"><code>git <span class="hljs-built_in">clone</span> https://github.com/elylucas/nest-ngconf.git</code></pre><p>Install the Nest CLI via npm globall:</p>
+<pre class="hljs"><code>npm i -g @nestjs/cli</code></pre><p>Go into the <code>nest-ngconf</code> directory and install dependencies:</p>
 <pre class="hljs"><code><span class="hljs-built_in">cd</span> nest-ngconf
 npm install</code></pre><p>If you are using VSCode, install the extension &#39;<a href="https://marketplace.visualstudio.com/itemdetails?itemName=rebornix.project-snippets">Project Snippets</a>&#39; if you would like to use the included snippets. If not, you can copy or type in the code straight from this guide.</p>
 <p>That&#39;s all!</p>
@@ -45,11 +46,11 @@ npm install</code></pre><p>If you are using VSCode, install the extension &#39;<
 <p>We will use Ionic in this workshop as our UI library. However, no previous experience with Ionic is required.</p>
 <h2 id="lab-1"><a class="header-link" href="#lab-1"></a>Lab 1</h2>
 <blockquote>
-<p>Start with the <code>master</code> branch.</p>
+<p>Start with the <code>master</code> branch and run <code>npm run dev</code> to start the Nest and Angular dev servers.</p>
 </blockquote>
 <h3 id="create-missions-nest-service"><a class="header-link" href="#create-missions-nest-service"></a>Create Missions Nest Service</h3>
 <p>Run the following command in your terminal to create the missions service:</p>
-<pre class="hljs"><code>npx nest g service missions</code></pre><p>This creates a Nest service file at <code>src/server/app/missions/missions.service.ts</code>.</p>
+<pre class="hljs"><code>nest g service missions</code></pre><p>This creates a Nest service file at <code>src/server/app/missions/missions.service.ts</code>.</p>
 <blockquote>
 <p>When you create a service through the Nest CLI, it automatically adds it to the list of providers in the main <code>app.module.ts</code> module, so you won&#39;t need to do it yourself.</p>
 </blockquote>
@@ -67,7 +68,7 @@ npm install</code></pre><p>If you are using VSCode, install the extension &#39;<
 </blockquote>
 <h3 id="create-missions-nest-controller"><a class="header-link" href="#create-missions-nest-controller"></a>Create Missions Nest Controller</h3>
 <p>Run the following command in your terminal to create the missions controller:</p>
-<pre class="hljs"><code>npx nest g controller missions</code></pre><p>This command creates a Nest controller file at <code>src/server/app/missions/missions.service.ts</code>.</p>
+<pre class="hljs"><code>nest g controller missions</code></pre><p>This command creates a Nest controller file at <code>src/server/app/missions/missions.service.ts</code>.</p>
 <blockquote>
 <p>Just like the service above, the CLI automatically adds controllers to the app module&#39;s list of controllers on your behalf.</p>
 </blockquote>
@@ -99,9 +100,7 @@ npm install</code></pre><p>If you are using VSCode, install the extension &#39;<
 <p>Import <code>Exclude</code> from the <code>class-transformer</code> library</p>
 </blockquote>
 <p>For the properties to be excluded, we must run them through the <code>classToPlain</code> function from the <code>class-transformer</code> library. We could do this in the controller like so:</p>
-<pre class="hljs"><code><span class="hljs-comment">// src/server/app/missions/missions.controller.ts</span>
-
-<span class="hljs-meta">@Get</span>()
+<pre class="hljs"><code><span class="hljs-meta">@Get</span>()
 async getMissions() {
   <span class="hljs-keyword">const</span> missionEntities = await <span class="hljs-keyword">this</span>.missionsService.getMissions();
   <span class="hljs-keyword">const</span> missions = classToPlain(missionEntities);
@@ -111,7 +110,7 @@ async getMissions() {
 <h3 id="nest-interceptors"><a class="header-link" href="#nest-interceptors"></a>Nest Interceptors</h3>
 <p>Nest interceptors are pretty much what they sound like; they intercept data from the controllers and let you inspect and modify that data.</p>
 <p>Create an interceptor from the CLI with the following command:</p>
-<pre class="hljs"><code>npx nest g interceptor util/data</code></pre><p>This command creates an interceptor file at <code>src/server/app/util/data.interceptor.ts</code>. Update the class in the file to the following:</p>
+<pre class="hljs"><code>nest g interceptor util/data</code></pre><p>This command creates an interceptor file at <code>src/server/app/util/data.interceptor.ts</code>. Update the class in the file to the following:</p>
 <p><strong>snippet: gsr-nest-data-interceptor</strong></p>
 <pre class="hljs"><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> DataInterceptor <span class="hljs-keyword">implements</span> NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable&lt;<span class="hljs-built_in">any</span>&gt; {
@@ -148,7 +147,7 @@ async getMissions() { ... }</code></pre><p>A third option allows us to apply the
   ],
 })
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> AppModule {}</code></pre><blockquote>
-<p><code>APP_INTERCEPTOR</code> is imported from &#39;@nestjs/core`.</p>
+<p>Import <code>APP_INTERCEPTOR</code> from &#39;@nestjs/core`.</p>
 </blockquote>
 <p>This method is used to make sure our interceptor runs everywhere.</p>
 <p>Once applied, hit the <code>/missions</code> endpoint again and you should see the list of missions minus the <code>createdAt</code> and <code>createdBy</code> meta-data.</p>
@@ -170,7 +169,7 @@ Bonus: If the data coming back from the controller is undefined, throw a NotFoun
 <p>The Ionic CLI invokes the same generator the Angular CLI would, except in special cases where there are Ionic specific modifications to make to the file.</p>
 </blockquote>
 <p>This command creates a service at <code>src/client/app/services/missions.service.ts</code>. Take note that from here on out we have multiple files with the same name in this project (one on the client and one on the server), so make sure you are in the right file! Update the class in the client file to the following:</p>
-<p><strong>snippet: gsr-angular-missions-service</strong></p>
+<p><strong>snippet: gsr-ng-missions-service</strong></p>
 <pre class="hljs"><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> MissionsService {
   <span class="hljs-keyword">constructor</span>(<span class="hljs-params"><span class="hljs-keyword">private</span> httpClient: HttpClient</span>) {}
 
@@ -187,7 +186,7 @@ Bonus: If the data coming back from the controller is undefined, throw a NotFoun
 </blockquote>
 <h3 id="update-home-page"><a class="header-link" href="#update-home-page"></a>Update Home Page</h3>
 <p>Next, modify the <code>home.page.ts</code> file to call into the service and save the results to a local observable:</p>
-<p><strong>snippet: gsr-angular-homepage-ts</strong></p>
+<p><strong>snippet: gsr-ng-homepage-ts</strong></p>
 <pre class="hljs"><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> HomePage <span class="hljs-keyword">implements</span> OnInit {
   missions: Observable&lt;Mission[]&gt;;
 
@@ -200,7 +199,7 @@ Bonus: If the data coming back from the controller is undefined, throw a NotFoun
 <p>Import <code>OnInit</code> from &#39;@angular/core&#39; and <code>Observable</code> from &#39;rxjs&#39;, <code>Mission</code> from &#39;../../../shared/models/mission.model&#39;,  and <code>MissionsService</code> from &#39;../services/missions.service&#39; (be careful to not import the <code>MissionsService</code> that belongs to the Nest project.</p>
 </blockquote>
 <p>Next, replace the <code>home.page.html</code> template with the following:</p>
-<p><strong>snippet: gsr-angular-homepage-template</strong></p>
+<p><strong>snippet: gsr-ng-homepage-template</strong></p>
 <pre class="hljs"><code><span class="hljs-tag">&lt;<span class="hljs-name">ion-header</span>&gt;</span>
   <span class="hljs-tag">&lt;<span class="hljs-name">ion-toolbar</span>&gt;</span>
   <span class="hljs-tag">&lt;<span class="hljs-name">ion-buttons</span> <span class="hljs-attr">slot</span>=<span class="hljs-string">"start"</span>&gt;</span>
@@ -252,7 +251,7 @@ async getMission(<span class="hljs-meta">@Param</span>(<span class="hljs-string"
 <h3 id="nest-pipes"><a class="header-link" href="#nest-pipes"></a>Nest Pipes</h3>
 <p>Fortunately, we can use another facet of Nest, called Pipes, to manipulate data that comes in from the outside before it reaches our controller. Because we are using TypeScript, Pipes know all the little details about your controller methods, including all the parameters, and the types those parameters are supposed to be. We can take advantage of this information and use <code>class-transformer</code> again to convert a plain object into something of a specific type. Let&#39;s see how to do that.</p>
 <p>Create a data pipe via the CLI:</p>
-<pre class="hljs"><code>npx nest g pipe util/data</code></pre><p>This command creates a pipe file at <code>src/server/app/util/data.pipe.ts</code>. Update the class in the file to:</p>
+<pre class="hljs"><code>nest g pipe util/data</code></pre><p>This command creates a pipe file at <code>src/server/app/util/data.pipe.ts</code>. Update the class in the file to:</p>
 <p><strong><em>snippet: gsr-nest-data-pipe</em></strong></p>
 <pre class="hljs"><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> DataPipe <span class="hljs-keyword">implements</span> PipeTransform {
   transform(value: <span class="hljs-built_in">any</span>, metadata: ArgumentMetadata) {
@@ -277,7 +276,7 @@ async getMission(<span class="hljs-meta">@Param</span>(<span class="hljs-string"
 <h3 id="update-angular-missions-service"><a class="header-link" href="#update-angular-missions-service"></a>Update Angular Missions Service</h3>
 <p>We can now pull back a specific mission from our API, so let&#39;s update the mission service in the Ionic project to do just that. </p>
 <p>Add the following method to the <code>missions.service.ts</code> service:</p>
-<p><strong><em>snippet: gsr-angular-missions-service-getbyid</em></strong></p>
+<p><strong><em>snippet: gsr-ng-missions-service-getbyid</em></strong></p>
 <pre class="hljs"><code>getMissionById(id: <span class="hljs-built_in">number</span>) {
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.httpClient
     .get&lt;{data: Mission}&gt;(<span class="hljs-string">`http://localhost:3000/missions/<span class="hljs-subst">${id}</span>`</span>)
@@ -291,7 +290,7 @@ async getMission(<span class="hljs-meta">@Param</span>(<span class="hljs-string"
   declarations: [HomePage, MissionFormComponent]
 })
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> HomePageModule {}</code></pre><p>Update <code>mission-form.component.ts</code> with the following:</p>
-<p><strong><em>snippet: gsr-angular-missionform-ts</em></strong></p>
+<p><strong><em>snippet: gsr-ng-missionform-ts</em></strong></p>
 <pre class="hljs"><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> MissionFormComponent <span class="hljs-keyword">implements</span> OnInit {
   mission$: Observable&lt;Mission&gt;;
 
@@ -323,7 +322,7 @@ async getMission(<span class="hljs-meta">@Param</span>(<span class="hljs-string"
 <p>Import <code>NavParams</code> and <code>ModalController</code> from &#39;@ionic/angular&#39;, and <code>of</code> from &#39;rxjs`.</p>
 </blockquote>
 <p>And then update the <code>mission-form.component.html</code> template to:</p>
-<p><strong><em>snippet: gsr-angular-missionform-template</em></strong></p>
+<p><strong><em>snippet: gsr-ng-missionform-template</em></strong></p>
 <pre class="hljs"><code><span class="hljs-tag">&lt;<span class="hljs-name">ion-header</span>&gt;</span>
   <span class="hljs-tag">&lt;<span class="hljs-name">ion-toolbar</span>&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-name">ion-buttons</span> <span class="hljs-attr">slot</span>=<span class="hljs-string">"end"</span>&gt;</span>
@@ -364,7 +363,7 @@ async getMission(<span class="hljs-meta">@Param</span>(<span class="hljs-string"
 <span class="hljs-tag">&lt;/<span class="hljs-name">ion-content</span>&gt;</span></code></pre><h3 id="update-mission-list-to-open-mission"><a class="header-link" href="#update-mission-list-to-open-mission"></a>Update Mission List to Open Mission</h3>
 <p>We open an Ionic modal and display the <code>MissionForm</code> when a user clicks on one of the missions in the list. </p>
 <p>Update the <code>home.page.ts</code> file to inject <code>private modalController: ModalController</code> into the constructor and then add the <code>openMission</code> method:</p>
-<p><strong><em>snippet: gsr-angular-homepage-openMission</em></strong></p>
+<p><strong><em>snippet: gsr-ng-homepage-openMission</em></strong></p>
 <pre class="hljs"><code>async openMission(id: <span class="hljs-built_in">number</span>) {
   <span class="hljs-keyword">const</span> modal = await <span class="hljs-keyword">this</span>.modalController.create({
     component: MissionFormComponent,
@@ -432,7 +431,7 @@ async deleteMission(<span class="hljs-meta">@Param</span>(<span class="hljs-stri
 <p>Now that our API supports the remaining create, update, and delete methods, let&#39;s add it to our Ionic app.</p>
 <h3 id="update-angular-missions-service-for-create,-update,-and-delete-methods"><a class="header-link" href="#update-angular-missions-service-for-create,-update,-and-delete-methods"></a>Update Angular Missions Service for Create, Update, and Delete methods</h3>
 <p>Update the Angular <code>missions.service.ts</code> file with the remaining methods:</p>
-<p><strong><em>snippet: gsr-angular-missions-service-createupdatedelete</em></strong></p>
+<p><strong><em>snippet: gsr-ng-missions-service-createupdatedelete</em></strong></p>
 <pre class="hljs"><code>createMission(mission: Mission) {
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.httpClient
     .post&lt;Mission&gt;(<span class="hljs-string">`http://localhost:3000/missions`</span>, mission)
@@ -453,7 +452,7 @@ deleteMission(mission: Mission) {
 <p>With the service methods taken care of, let&#39;s look at updating the mission form next.</p>
 <h3 id="updating-mission-form-to-support-create-and-edit"><a class="header-link" href="#updating-mission-form-to-support-create-and-edit"></a>Updating Mission Form to Support Create and Edit</h3>
 <p>Next, go update the <code>submit</code> method in <code>mission-page.component.ts</code> with the following:</p>
-<p><strong><em>snippet: gsr-angular-missionform-submit-method</em></strong></p>
+<p><strong><em>snippet: gsr-ng-missionform-submit-method</em></strong></p>
 <pre class="hljs"><code>async submit(mission: Mission) {
   <span class="hljs-keyword">try</span> {
     <span class="hljs-keyword">if</span> (mission.id) {
@@ -479,7 +478,7 @@ deleteMission(mission: Mission) {
 <p>First, we take a look to see if this is a new mission or an existing one by checking to see if the mission has an id, then we call the appropriate service method based on this check. Next, we subscribe to the call so we can dismiss the modal when it is complete. We also save a reference to the subscription so we can make sure to unsubscribe from it when the call is done, which helps prevent any potential memory leaks.</p>
 <p>The last thing we need to do is hook up the add a button to open up the mission form modal. In <code>home.page.html</code> add the click handler <code>(click)=&quot;newMission()&quot;</code> to the add button in the <code>&lt;ion-header&gt;</code>:</p>
 <pre class="hljs"><code><span class="hljs-tag">&lt;<span class="hljs-name">ion-button</span> (<span class="hljs-attr">click</span>)=<span class="hljs-string">"newMission()"</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">ion-icon</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"add"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">ion-icon</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">ion-button</span>&gt;</span></code></pre><p>Then add the <code>newMission</code> method to the class in <code>home.page.ts</code>:</p>
-<p><strong><em>snippet: gsr-angular-homepage-newmission</em></strong></p>
+<p><strong><em>snippet: gsr-ng-homepage-newmission</em></strong></p>
 <pre class="hljs"><code>async newMission() {
   <span class="hljs-keyword">const</span> modal = await <span class="hljs-keyword">this</span>.modalController.create({
     component: MissionFormComponent
@@ -493,7 +492,7 @@ deleteMission(mission: Mission) {
 <p>When the <code>MissionForm</code> modal loads an existing mission, a row displays above the form showing the mission&#39;s ID and a delete icon. Next, we enable the delete icon to allow a user to delete missions.</p>
 <p>Add a click handler to the &quot;trash&quot; icon in <code>mission-form.component.html</code>:</p>
 <pre class="hljs"><code><span class="hljs-tag">&lt;<span class="hljs-name">ion-icon</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"trash"</span> (<span class="hljs-attr">click</span>)=<span class="hljs-string">"delete(mission)"</span> <span class="hljs-attr">color</span>=<span class="hljs-string">"danger"</span> <span class="hljs-attr">slot</span>=<span class="hljs-string">"end"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">ion-icon</span>&gt;</span></code></pre><p>In <code>mission-form.component.ts</code>, add the delete method:</p>
-<p><strong><em>snippet: gsr-angular-missionform-delete</em></strong></p>
+<p><strong><em>snippet: gsr-ng-missionform-delete</em></strong></p>
 <pre class="hljs"><code>async <span class="hljs-keyword">delete</span>(mission: Mission) {
   <span class="hljs-keyword">const</span> alert = await <span class="hljs-keyword">this</span>.alertController.create({
     header: <span class="hljs-string">'Delete Mission?'</span>,
@@ -567,7 +566,7 @@ deleteMission(mission: Mission) {
 <p><code>ValidationPipe</code> is imported from &#39;@nestjs/common`.</p>
 </blockquote>
 <p>In the client &#39;mission.service.ts<code>file, add a</code>handleError` method the HTTP responses can use to parse the validation error into a single string:</p>
-<p><strong><em>snippet: gsr-angular-missions-service-handleerror</em></strong></p>
+<p><strong><em>snippet: gsr-ng-missions-service-handleerror</em></strong></p>
 <pre class="hljs"><code>handleError(response: <span class="hljs-built_in">any</span>) {
   <span class="hljs-keyword">const</span> { error } = response;
   <span class="hljs-keyword">if</span> (error.statusCode === <span class="hljs-number">400</span>) {
@@ -601,7 +600,7 @@ deleteMission(mission: Mission) {
 </ul>
 <h3 id="create-roles-decorator"><a class="header-link" href="#create-roles-decorator"></a>Create Roles Decorator</h3>
 <p>Let&#39;s start off by creating a <code>Roles</code> decorator that we can use on our controller methods to specify which roles we want the auth guard to check. Nest makes it simple to create a TypeScript decorator for this use case. From the command line, issue this command:</p>
-<pre class="hljs"><code>npx nest g decorator util/roles</code></pre><p>The roles decorator is good to go and ready to use, so we won&#39;t need to make any modifications to the file Nest generated.</p>
+<pre class="hljs"><code>nest g decorator util/roles</code></pre><p>The roles decorator is good to go and ready to use, so we won&#39;t need to make any modifications to the file Nest generated.</p>
 <p>To specify which roles we want a route handler to check for access, we use <code>@Roles(&#39;...&#39;)</code> on each of the controller&#39;s methods. In <code>missions.controller.ts</code> add <code>@Roles</code> and specify the role to the following methods:</p>
 <pre class="hljs"><code><span class="hljs-meta">@Post</span>()
 <span class="hljs-meta">@Roles</span>(<span class="hljs-string">'user'</span>)
@@ -613,12 +612,11 @@ async updateMission(...) { ... }
 
 <span class="hljs-meta">@Delete</span>(<span class="hljs-string">':id'</span>)
 <span class="hljs-meta">@Roles</span>(<span class="hljs-string">'admin'</span>)
-async deleteMission(...) { ... }</code></pre><h3 id="create-nest-guard"><a class="header-link" href="#create-nest-guard"></a>Create Nest Guard</h3>
+async deleteMission(...) { ... }</code></pre><h3 id="crea9te-nest-guard"><a class="header-link" href="#crea9te-nest-guard"></a>Crea9te Nest Guard</h3>
 <p>Next, create the auth guard with the following CLI command:</p>
-<pre class="hljs"><code>npx nest g guard util/auth</code></pre><p>Open up the <code>src/server/app/util/auth.guard.ts</code> file, and replace the class with the following:</p>
+<pre class="hljs"><code>nest g guard util/auth</code></pre><p>Open up the <code>src/server/app/util/auth.guard.ts</code> file, and replace the class with the following:</p>
 <p><strong><em>snipppet: gsr-nest-authguard</em></strong></p>
-<pre class="hljs"><code><span class="hljs-meta">@Injectable</span>()
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> AuthGuard <span class="hljs-keyword">implements</span> CanActivate {
+<pre class="hljs"><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> AuthGuard <span class="hljs-keyword">implements</span> CanActivate {
   <span class="hljs-keyword">constructor</span>(<span class="hljs-params"><span class="hljs-keyword">private</span> reflector: Reflector</span>) {}
 
   canActivate(context: ExecutionContext): <span class="hljs-built_in">boolean</span> {
@@ -672,7 +670,7 @@ async deleteMission(...) { ... }</code></pre><h3 id="create-nest-guard"><a class
 <h3 id="create-angular-http-interceptor"><a class="header-link" href="#create-angular-http-interceptor"></a>Create Angular HTTP Interceptor</h3>
 <p>In Angular, HTTP Interceptors adds a piece of middleware that will let you modify the outgoing request. This interceptor is a perfect place to add the authorization header if our user is authenticated.</p>
 <p>In the <code>src/client/app/util</code> folder, create a new file called <code>auth.interceptor.ts</code> and use the following code for it:</p>
-<p><strong><em>snippet: gsr-angular-auth-interceptor</em></strong></p>
+<p><strong><em>snippet: gsr-ng-auth-interceptor</em></strong></p>
 <pre class="hljs"><code><span class="hljs-keyword">import</span> { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from <span class="hljs-string">'@angular/common/http'</span>;
 <span class="hljs-keyword">import</span> { Injectable } from <span class="hljs-string">'@angular/core'</span>;
 <span class="hljs-keyword">import</span> { Observable } from <span class="hljs-string">'rxjs'</span>;
