@@ -39,8 +39,8 @@
     ],
     "description": "gsr-nest-missions-controller"
   },
-  "gsr-angular-missions-service": {
-		"prefix": "gsr-angular-missions-service",
+  "gsr-ng-missions-service": {
+		"prefix": "gsr-ng-missions-service",
 		"body": [
 			"export class MissionsService {",
 			"  constructor(private httpClient: HttpClient) {}",
@@ -52,7 +52,7 @@
 			"  }",
 			"}"
 		],
-		"description": "gsr-angular-missions-service"
+		"description": "gsr-ng-missions-service"
 	},
   "gsr-nest-data-interceptor": {
 		"prefix": "gsr-nest-data-interceptor",
@@ -71,8 +71,8 @@
 		],
 		"description": "gsr-nest-data-interceptor"
 	},
-  "gsr-angular-homepage-ts": {
-    "prefix": "gsr-angular-homepage-ts",
+  "gsr-ng-homepage-ts": {
+    "prefix": "gsr-ng-homepage-ts",
     "body": [
       "export class HomePage implements OnInit {",
       "  missions: Observable<Mission[]>;",
@@ -84,7 +84,7 @@
       "  }",
       "}"
     ],
-    "description": "gsr-angular-homepage-ts"
+    "description": "gsr-ng-homepage-ts"
   },
 	"gsr-nest-missions-service-get": {
 		"prefix": "gsr-nest-missions-service-get",
@@ -118,19 +118,19 @@
     ],
     "description": "gsr-nest-data-pipe"
   },
-  "gsr-angular-missions-service-getbyid": {
-		"prefix": "gsr-angular-missions-service-getbyid",
+  "gsr-ng-missions-service-getbyid": {
+		"prefix": "gsr-ng-missions-service-getbyid",
 		"body": [
 			"getMissionById(id: number) {",
 			"  return this.httpClient",
-			"    .get<{data: Mission}>(`http://localhost:3000/missions/${id}`)",
+			"    .get<{data: Mission}>('http://localhost:3000/missions/' + id)",
 			"    .pipe(map(response => response.data));",
 			"}"
 		],
-		"description": "gsr-angular-missions-service-getbyid"
+		"description": "gsr-ng-missions-service-getbyid"
 	},
-  "gsr-angular-homepage-openMission": {
-		"prefix": "gsr-angular-homepage-openMission",
+  "gsr-ng-homepage-openMission": {
+		"prefix": "gsr-ng-homepage-openMission",
 		"body": [
 			"async openMission(id: number) {",
 			"  const modal = await this.modalController.create({",
@@ -144,10 +144,10 @@
 			"  }",
 			"}"
 		],
-		"description": "gsr-angular-homepage-openMission"
+		"description": "gsr-ng-homepage-openMission"
 	},
-  "gsr-angular-missionform-ts": {
-    "prefix": "gsr-angular-missionform-ts",
+  "gsr-ng-missionform-ts": {
+    "prefix": "gsr-ng-missionform-ts",
     "body": [
       "export class MissionFormComponent implements OnInit {",
       "  mission$: Observable<Mission>;",
@@ -178,7 +178,7 @@
       "  }",
       "}"
     ],
-    "description": "gsr-angular-missionform-ts"
+    "description": "gsr-ng-missionform-ts"
   },
   "gsr-nest-missions-service-createupdatedelete": {
     "prefix": "gsr-nest-missions-service-createupdatedelete",
@@ -223,8 +223,8 @@
     ],
     "description": "gsr-nest-missions-controller-createupdatedelete"
   },
-	"gsr-angular-homepage-newmission": {
-		"prefix": "gsr-angular-homepage-newmission",
+	"gsr-ng-homepage-newmission": {
+		"prefix": "gsr-ng-homepage-newmission",
 		"body": [
 			"async newMission() {",
 			"  const modal = await this.modalController.create({",
@@ -237,10 +237,10 @@
 			"  }",
 			"}"
 		],
-		"description": "gsr-angular-homepage-newmission"
+		"description": "gsr-ng-homepage-newmission"
 	},
-	"gsr-angular-missions-service-createupdatedelete": {
-		"prefix": "gsr-angular-missions-service-createupdatedelete",
+	"gsr-ng-missions-service-createupdatedelete": {
+		"prefix": "gsr-ng-missions-service-createupdatedelete",
 		"body": [
 			"createMission(mission: Mission) {",
 			"  return this.httpClient",
@@ -260,10 +260,10 @@
 			"    .toPromise().catch(response => { throw response.error; });",
 			"}"
 		],
-		"description": "gsr-angular-missions-service-createupdatedelete"
+		"description": "gsr-ng-missions-service-createupdatedelete"
 	},
-	"gsr-angular-missionform-submit-method": {
-		"prefix": "gsr-angular-missionform-submit-method",
+	"gsr-ng-missionform-submit-method": {
+		"prefix": "gsr-ng-missionform-submit-method",
 		"body": [
 			"async submit(mission: Mission) {",
 			"  try {",
@@ -286,10 +286,10 @@
 			"  }",
 			"}"
 		],
-		"description": "gsr-angular-missionform-submit-method"
+		"description": "gsr-ng-missionform-submit-method"
   },
-  "gsr-angular-missionform-delete": {
-		"prefix": "gsr-angular-missionform-delete",
+  "gsr-ng-missionform-delete": {
+		"prefix": "gsr-ng-missionform-delete",
 		"body": [
 			"async delete(mission: Mission) {",
 			"    const alert = await this.alertController.create({",
@@ -325,10 +325,10 @@
 			"    await alert.present();",
 			"  }"
 		],
-		"description": "gsr-angular-missionform-delete"
+		"description": "gsr-ng-missionform-delete"
 	},
-  "gsr-angular-missions-service-handleerror": {
-		"prefix": "gsr-angular-missions-service-handleerror",
+  "gsr-ng-missions-service-handleerror": {
+		"prefix": "gsr-ng-missions-service-handleerror",
 		"body": [
 			"handleError(response: any) {",
 			"    const { error } = response;",
@@ -345,10 +345,10 @@
 			"    throw error;",
 			"  }"
 		],
-		"description": "gsr-angular-missions-service-handleerror"
+		"description": "gsr-ng-missions-service-handleerror"
   },
-  "gsr-angular-auth-interceptor": {
-		"prefix": "gsr-angular-auth-interceptor",
+  "gsr-ng-auth-interceptor": {
+		"prefix": "gsr-ng-auth-interceptor",
 		"body": [
 			"import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';",
 			"import { Injectable } from '@angular/core';",
@@ -370,7 +370,7 @@
 			"",
 			"    const newRequest = request.clone({",
 			"      setHeaders: {",
-			"        Authorization: `Bearer ${authToken}`",
+			"        Authorization: 'Bearer ' + authToken",
 			"      }",
 			"    });",
 			"",
@@ -379,6 +379,47 @@
 			"}",
 			""
 		],
-		"description": "gsr-angular-auth-interceptor"
+		"description": "gsr-ng-auth-interceptor"
+	},
+	"gsr-nest-authguard": {
+		"prefix": "gsr-nest-authguard",
+		"body": [
+			"export class AuthGuard implements CanActivate {",
+			"  constructor(private reflector: Reflector) {}",
+			"",
+			"  canActivate(context: ExecutionContext): boolean {",
+			"    const requiredRoles =",
+			"      this.reflector.get<string[]>('roles', context.getHandler()) || [];",
+			"",
+			"    if (requiredRoles.length === 0) {",
+			"      return true;",
+			"    }",
+			"",
+			"    const request = context.switchToHttp().getRequest();",
+			"",
+			"    if (",
+			"      !request.headers.authorization ||",
+			"      !request.headers.authorization.startsWith('Bearer ')",
+			"    ) {",
+			"      return false;",
+			"    }",
+			"",
+			"    const token = request.headers.authorization.split(' ')[1];",
+			"",
+			"    const userRoles = [];",
+			"",
+			"    if (token === 'user-token') {",
+			"      userRoles.push('user');",
+			"    }",
+			"    if (token === 'admin-token') {",
+			"      userRoles.push('user', 'admin');",
+			"    }",
+			"",
+			"    const hasRole = userRoles.some(role => requiredRoles.indexOf(role) > -1);",
+			"    return hasRole;",
+			"  }",
+			"}"
+		],
+		"description": "gsr-nest-authguard"
 	}
 }

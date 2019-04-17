@@ -10,6 +10,12 @@ To begin, clone the starter app from Github:
 git clone https://github.com/elylucas/nest-ngconf.git
 ```
 
+Install the Nest CLI via npm globall:
+
+```bash
+npm i -g @nestjs/cli
+```
+
 Go into the `nest-ngconf` directory and install dependencies:
 
 ```bash
@@ -37,14 +43,14 @@ We will use Ionic in this workshop as our UI library. However, no previous exper
 
 ## Lab 1 
 
-> Start with the `master` branch.
+> Start with the `master` branch and run `npm run dev` to start the Nest and Angular dev servers.
 
 ### Create Missions Nest Service
 
 Run the following command in your terminal to create the missions service:
 
 ```bash
-npx nest g service missions
+nest g service missions
 ```
 
 This creates a Nest service file at `src/server/app/missions/missions.service.ts`.
@@ -74,7 +80,7 @@ export class MissionsService {
 Run the following command in your terminal to create the missions controller:
 
 ```bash
-npx nest g controller missions
+nest g controller missions
 ```
 
 This command creates a Nest controller file at `src/server/app/missions/missions.service.ts`.
@@ -122,8 +128,6 @@ export class MissionEntity {
 For the properties to be excluded, we must run them through the `classToPlain` function from the `class-transformer` library. We could do this in the controller like so:
 
 ```typescript
-// src/server/app/missions/missions.controller.ts
-
 @Get()
 async getMissions() {
   const missionEntities = await this.missionsService.getMissions();
@@ -143,7 +147,7 @@ Nest interceptors are pretty much what they sound like; they intercept data from
 Create an interceptor from the CLI with the following command:
 
 ```bash
-npx nest g interceptor util/data
+nest g interceptor util/data
 ```
 
 This command creates an interceptor file at `src/server/app/util/data.interceptor.ts`. Update the class in the file to the following:
@@ -204,7 +208,7 @@ import { DataInterceptor } from './util/data.interceptor';
 export class AppModule {}
 ```
 
-> `APP_INTERCEPTOR` is imported from '@nestjs/core`.
+> Import `APP_INTERCEPTOR` from '@nestjs/core`.
 
 This method is used to make sure our interceptor runs everywhere.
 
@@ -244,7 +248,7 @@ npx ionic g service services/missions
 
 This command creates a service at `src/client/app/services/missions.service.ts`. Take note that from here on out we have multiple files with the same name in this project (one on the client and one on the server), so make sure you are in the right file! Update the class in the client file to the following:
 
-**snippet: gsr-angular-missions-service**
+**snippet: gsr-ng-missions-service**
 
 ```typescript
 export class MissionsService {
@@ -266,7 +270,7 @@ export class MissionsService {
 
 Next, modify the `home.page.ts` file to call into the service and save the results to a local observable:
 
-**snippet: gsr-angular-homepage-ts**
+**snippet: gsr-ng-homepage-ts**
 
 ```typescript
 export class HomePage implements OnInit {
@@ -284,7 +288,7 @@ export class HomePage implements OnInit {
 
 Next, replace the `home.page.html` template with the following:
 
-**snippet: gsr-angular-homepage-template**
+**snippet: gsr-ng-homepage-template**
 
 ```html
 <ion-header>
@@ -366,7 +370,7 @@ Fortunately, we can use another facet of Nest, called Pipes, to manipulate data 
 Create a data pipe via the CLI:
 
 ```bash
-npx nest g pipe util/data
+nest g pipe util/data
 ```
 
 This command creates a pipe file at `src/server/app/util/data.pipe.ts`. Update the class in the file to:
@@ -410,7 +414,7 @@ We can now pull back a specific mission from our API, so let's update the missio
 
 Add the following method to the `missions.service.ts` service:
 
-***snippet: gsr-angular-missions-service-getbyid***
+***snippet: gsr-ng-missions-service-getbyid***
 
 ```typescript
 getMissionById(id: number) {
@@ -441,7 +445,7 @@ export class HomePageModule {}
 
 Update `mission-form.component.ts` with the following:
 
-***snippet: gsr-angular-missionform-ts***
+***snippet: gsr-ng-missionform-ts***
 
 ```typescript
 export class MissionFormComponent implements OnInit {
@@ -478,7 +482,7 @@ export class MissionFormComponent implements OnInit {
 
 And then update the `mission-form.component.html` template to:
 
-***snippet: gsr-angular-missionform-template***
+***snippet: gsr-ng-missionform-template***
 
 ```html
 <ion-header>
@@ -527,7 +531,7 @@ We open an Ionic modal and display the `MissionForm` when a user clicks on one o
 
 Update the `home.page.ts` file to inject `private modalController: ModalController` into the constructor and then add the `openMission` method:
 
-***snippet: gsr-angular-homepage-openMission***
+***snippet: gsr-ng-homepage-openMission***
 
 ```typescript
 async openMission(id: number) {
@@ -628,7 +632,7 @@ Now that our API supports the remaining create, update, and delete methods, let'
 
 Update the Angular `missions.service.ts` file with the remaining methods:
 
-***snippet: gsr-angular-missions-service-createupdatedelete***
+***snippet: gsr-ng-missions-service-createupdatedelete***
 
 ```typescript
 createMission(mission: Mission) {
@@ -658,7 +662,7 @@ With the service methods taken care of, let's look at updating the mission form 
 
 Next, go update the `submit` method in `mission-page.component.ts` with the following:
 
-***snippet: gsr-angular-missionform-submit-method***
+***snippet: gsr-ng-missionform-submit-method***
 
 ```typescript
 async submit(mission: Mission) {
@@ -695,7 +699,7 @@ The last thing we need to do is hook up the add a button to open up the mission 
 
 Then add the `newMission` method to the class in `home.page.ts`:
 
-***snippet: gsr-angular-homepage-newmission***
+***snippet: gsr-ng-homepage-newmission***
 
 ```typescript
 async newMission() {
@@ -722,7 +726,7 @@ Add a click handler to the "trash" icon in `mission-form.component.html`:
 
 In `mission-form.component.ts`, add the delete method:
 
-***snippet: gsr-angular-missionform-delete***
+***snippet: gsr-ng-missionform-delete***
 
 ```typescript
 async delete(mission: Mission) {
@@ -815,7 +819,7 @@ Add the Nest `ValidationPipe` to the list of imports in the server `app.module.t
 
 In the client 'mission.service.ts` file, add a `handleError` method the HTTP responses can use to parse the validation error into a single string:
 
-***snippet: gsr-angular-missions-service-handleerror***
+***snippet: gsr-ng-missions-service-handleerror***
 
 ```typescript
 handleError(response: any) {
@@ -865,7 +869,7 @@ We will also set up a simple role system that contains two roles, users and admi
 Let's start off by creating a `Roles` decorator that we can use on our controller methods to specify which roles we want the auth guard to check. Nest makes it simple to create a TypeScript decorator for this use case. From the command line, issue this command:
 
 ```bash
-npx nest g decorator util/roles
+nest g decorator util/roles
 ```
 
 The roles decorator is good to go and ready to use, so we won't need to make any modifications to the file Nest generated.
@@ -886,12 +890,12 @@ async updateMission(...) { ... }
 async deleteMission(...) { ... }
 ```
 
-### Create Nest Guard
+### Crea9te Nest Guard
 
 Next, create the auth guard with the following CLI command:
 
 ```bash
-npx nest g guard util/auth
+nest g guard util/auth
 ```
 
 Open up the `src/server/app/util/auth.guard.ts` file, and replace the class with the following:
@@ -899,7 +903,6 @@ Open up the `src/server/app/util/auth.guard.ts` file, and replace the class with
 ***snipppet: gsr-nest-authguard***
 
 ```typescript
-@Injectable()
 export class AuthGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
@@ -970,7 +973,7 @@ In Angular, HTTP Interceptors adds a piece of middleware that will let you modif
 
 In the `src/client/app/util` folder, create a new file called `auth.interceptor.ts` and use the following code for it:
 
-***snippet: gsr-angular-auth-interceptor***
+***snippet: gsr-ng-auth-interceptor***
 
 ```typescript
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
