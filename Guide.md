@@ -168,7 +168,7 @@ export class DataInterceptor implements NestInterceptor {
 }
 ```
 
-> Import `map` from 'rxjs/observables' and `classToPlain` from 'class-transformer'
+> Import `map` from 'rxjs/operators' and `classToPlain` from 'class-transformer'
 
 The `next.handle()` method is an observable stream that you can interact with like any other observable. Here, we use the `map` operator from RXJS to transform the output from one object to another. Specifically, we are using `classToPlain` to have `class-transformer` remove the excluded params from `MissionEntity`, just like the controller did earlier. 
 
