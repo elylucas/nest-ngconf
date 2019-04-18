@@ -2,5 +2,8 @@
   "watch": ["src/server/app"],
   "ext": "ts",
   "ignore": ["server/src/**/*.spec.ts"],
-  "exec": "TS_NODE_PROJECT=src/server/tsconfig.build.json node --inspect -r ts-node/register -r tsconfig-paths/register src/server/app/main.ts"
+  "env": {
+    "TS_NODE_PROJECT": "./src/server/tsconfig.build.json"
+  },
+  "exec": "node --inspect -r ts-node/register -r tsconfig-paths/register src/server/app/main.ts"
 }
