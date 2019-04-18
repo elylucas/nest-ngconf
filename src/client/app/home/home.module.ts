@@ -5,6 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 
 import { HomePage } from './home.page';
+import { MissionFormComponent } from '../mission-form/mission-form.component';
 
 @NgModule({
   imports: [
@@ -18,6 +19,7 @@ import { HomePage } from './home.page';
       }
     ])
   ],
-  declarations: [HomePage]
+  entryComponents: [MissionFormComponent],
+  declarations: [MissionFormComponent, HomePage]
 })
 export class HomePageModule {}
