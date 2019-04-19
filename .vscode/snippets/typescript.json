@@ -1,6 +1,6 @@
 {
-  "gsr-mission-model": {
-    "prefix": "gsr-mission-model",
+  "old-mission-model": {
+    "prefix": "old-mission-model",
     "body": [
       "export interface Mission {",
       "  id?: number;",
@@ -11,8 +11,8 @@
     ],
     "description": ""
   },
-  "gsr-nest-missions-service": {
-    "prefix": "gsr-nest-missions-service",
+  "old-nest-missions-service": {
+    "prefix": "old-nest-missions-service",
     "body": [
       "export class MissionsService {",
       "  constructor(private missionsRepository: MissionsRepository) {}",
@@ -22,10 +22,10 @@
       "  }",
       "}"
     ],
-    "description": "gsr-nest-missions-service"
+    "description": "old-nest-missions-service"
   },
-  "gsr-nest-missions-controller": {
-    "prefix": "gsr-nest-missions-controller",
+  "old-nest-missions-controller": {
+    "prefix": "old-nest-missions-controller",
     "body": [
       "export class MissionsController {",
       "",
@@ -37,10 +37,10 @@
       "  }",
       "}"
     ],
-    "description": "gsr-nest-missions-controller"
+    "description": "old-nest-missions-controller"
   },
-  "gsr-ng-missions-service": {
-		"prefix": "gsr-ng-missions-service",
+  "old-ng-missions-service": {
+		"prefix": "old-ng-missions-service",
 		"body": [
 			"export class MissionsService {",
 			"  constructor(private httpClient: HttpClient) {}",
@@ -52,10 +52,10 @@
 			"  }",
 			"}"
 		],
-		"description": "gsr-ng-missions-service"
+		"description": "old-ng-missions-service"
 	},
-  "gsr-nest-data-interceptor": {
-		"prefix": "gsr-nest-data-interceptor",
+  "old-nest-data-interceptor": {
+		"prefix": "old-nest-data-interceptor",
 		"body": [
 			"export class DataInterceptor implements NestInterceptor {",
 			"  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {",
@@ -69,10 +69,10 @@
 			"  }",
 			"}"
 		],
-		"description": "gsr-nest-data-interceptor"
+		"description": "old-nest-data-interceptor"
 	},
-  "gsr-ng-homepage-ts": {
-    "prefix": "gsr-ng-homepage-ts",
+  "old-ng-homepage-ts": {
+    "prefix": "old-ng-homepage-ts",
     "body": [
       "export class HomePage implements OnInit {",
       "  missions: Observable<Mission[]>;",
@@ -84,29 +84,29 @@
       "  }",
       "}"
     ],
-    "description": "gsr-ng-homepage-ts"
+    "description": "old-ng-homepage-ts"
   },
-	"gsr-nest-missions-service-get": {
-		"prefix": "gsr-nest-missions-service-get",
+	"old-nest-missions-service-get": {
+		"prefix": "old-nest-missions-service-get",
 		"body": [
 			"getMission(id: number) {",
 			"  return this.missionsRepository.get(id);",
 			"}"
 		],
-		"description": "gsr-nest-missions-service-get"
+		"description": "old-nest-missions-service-get"
 	},
-	"gsr-nest-missions-controller-get": {
-		"prefix": "gsr-nest-missions-controller-get",
+	"old-nest-missions-controller-get": {
+		"prefix": "old-nest-missions-controller-get",
 		"body": [
 			" @Get(':id')",
 			"  async getMission(@Param('id') id: number) {",
 			"    return this.missionsService.getMission(id);",
 			"  }"
 		],
-		"description": "gsr-nest-missions-controller-get"
+		"description": "old-nest-missions-controller-get"
 	},
-  "gsr-nest-data-pipe": {
-    "prefix": "gsr-nest-data-pipe",
+  "old-nest-data-pipe": {
+    "prefix": "old-nest-data-pipe",
     "body": [
       "export class DataPipe implements PipeTransform {",
       "  transform(value: any, metadata: ArgumentMetadata) {",
@@ -116,10 +116,10 @@
       "  }",
       "}"
     ],
-    "description": "gsr-nest-data-pipe"
+    "description": "old-nest-data-pipe"
   },
-  "gsr-ng-missions-service-getbyid": {
-		"prefix": "gsr-ng-missions-service-getbyid",
+  "old-ng-missions-service-getbyid": {
+		"prefix": "old-ng-missions-service-getbyid",
 		"body": [
 			"getMissionById(id: number) {",
 			"  return this.httpClient",
@@ -127,10 +127,10 @@
 			"    .pipe(map(response => response.data));",
 			"}"
 		],
-		"description": "gsr-ng-missions-service-getbyid"
+		"description": "old-ng-missions-service-getbyid"
 	},
-  "gsr-ng-homepage-openMission": {
-		"prefix": "gsr-ng-homepage-openMission",
+  "old-ng-homepage-openMission": {
+		"prefix": "old-ng-homepage-openMission",
 		"body": [
 			"async openMission(id: number) {",
 			"  const modal = await this.modalController.create({",
@@ -144,10 +144,10 @@
 			"  }",
 			"}"
 		],
-		"description": "gsr-ng-homepage-openMission"
+		"description": "old-ng-homepage-openMission"
 	},
-  "gsr-ng-missionform-ts": {
-    "prefix": "gsr-ng-missionform-ts",
+  "old-ng-missionform-ts": {
+    "prefix": "old-ng-missionform-ts",
     "body": [
       "export class MissionFormComponent implements OnInit {",
       "  mission$: Observable<Mission>;",
@@ -178,10 +178,10 @@
       "  }",
       "}"
     ],
-    "description": "gsr-ng-missionform-ts"
+    "description": "old-ng-missionform-ts"
   },
-  "gsr-nest-missions-service-createupdatedelete": {
-    "prefix": "gsr-nest-missions-service-createupdatedelete",
+  "old-nest-missions-service-createupdatedelete": {
+    "prefix": "old-nest-missions-service-createupdatedelete",
     "body": [
       "createMission(mission: MissionEntity) {",
       "    return this.missionsRepository.create(mission);",
@@ -201,10 +201,10 @@
       "    return this.missionsRepository.delete(id);",
       "  }"
     ],
-    "description": "gsr-nest-missions-service-createupdatedelete"
+    "description": "old-nest-missions-service-createupdatedelete"
   },
-  "gsr-nest-missions-controller-createupdatedelete": {
-    "prefix": "gsr-nest-missions-controller-createupdatedelete",
+  "old-nest-missions-controller-createupdatedelete": {
+    "prefix": "old-nest-missions-controller-createupdatedelete",
     "body": [
       "@Post()",
       "async createMission(@Body() mission: MissionEntity) {",
@@ -221,10 +221,10 @@
       "  return this.missionsService.deleteMission(id);",
       "}"
     ],
-    "description": "gsr-nest-missions-controller-createupdatedelete"
+    "description": "old-nest-missions-controller-createupdatedelete"
   },
-	"gsr-ng-homepage-newmission": {
-		"prefix": "gsr-ng-homepage-newmission",
+	"old-ng-homepage-newmission": {
+		"prefix": "old-ng-homepage-newmission",
 		"body": [
 			"async newMission() {",
 			"  const modal = await this.modalController.create({",
@@ -237,10 +237,10 @@
 			"  }",
 			"}"
 		],
-		"description": "gsr-ng-homepage-newmission"
+		"description": "old-ng-homepage-newmission"
 	},
-	"gsr-ng-missions-service-createupdatedelete": {
-		"prefix": "gsr-ng-missions-service-createupdatedelete",
+	"old-ng-missions-service-createupdatedelete": {
+		"prefix": "old-ng-missions-service-createupdatedelete",
 		"body": [
 			"createMission(mission: Mission) {",
 			"  return this.httpClient",
@@ -260,10 +260,10 @@
 			"    .toPromise().catch(response => { throw response.error; });",
 			"}"
 		],
-		"description": "gsr-ng-missions-service-createupdatedelete"
+		"description": "old-ng-missions-service-createupdatedelete"
 	},
-	"gsr-ng-missionform-submit-method": {
-		"prefix": "gsr-ng-missionform-submit-method",
+	"old-ng-missionform-submit-method": {
+		"prefix": "old-ng-missionform-submit-method",
 		"body": [
 			"async submit(mission: Mission) {",
 			"  try {",
@@ -286,10 +286,10 @@
 			"  }",
 			"}"
 		],
-		"description": "gsr-ng-missionform-submit-method"
+		"description": "old-ng-missionform-submit-method"
   },
-  "gsr-ng-missionform-delete": {
-		"prefix": "gsr-ng-missionform-delete",
+  "old-ng-missionform-delete": {
+		"prefix": "old-ng-missionform-delete",
 		"body": [
 			"async delete(mission: Mission) {",
 			"    const alert = await this.alertController.create({",
@@ -325,10 +325,10 @@
 			"    await alert.present();",
 			"  }"
 		],
-		"description": "gsr-ng-missionform-delete"
+		"description": "old-ng-missionform-delete"
 	},
-  "gsr-ng-missions-service-handleerror": {
-		"prefix": "gsr-ng-missions-service-handleerror",
+  "old-ng-missions-service-handleerror": {
+		"prefix": "old-ng-missions-service-handleerror",
 		"body": [
 			"handleError(response: any) {",
 			"    const { error } = response;",
@@ -345,10 +345,10 @@
 			"    throw error;",
 			"  }"
 		],
-		"description": "gsr-ng-missions-service-handleerror"
+		"description": "old-ng-missions-service-handleerror"
   },
-  "gsr-ng-auth-interceptor": {
-		"prefix": "gsr-ng-auth-interceptor",
+  "old-ng-auth-interceptor": {
+		"prefix": "old-ng-auth-interceptor",
 		"body": [
 			"import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';",
 			"import { Injectable } from '@angular/core';",
@@ -379,10 +379,10 @@
 			"}",
 			""
 		],
-		"description": "gsr-ng-auth-interceptor"
+		"description": "old-ng-auth-interceptor"
 	},
-	"gsr-nest-authguard": {
-		"prefix": "gsr-nest-authguard",
+	"old-nest-authguard": {
+		"prefix": "old-nest-authguard",
 		"body": [
 			"export class AuthGuard implements CanActivate {",
 			"  constructor(private reflector: Reflector) {}",
@@ -420,6 +420,6 @@
 			"  }",
 			"}"
 		],
-		"description": "gsr-nest-authguard"
+		"description": "old-nest-authguard"
 	}
 }

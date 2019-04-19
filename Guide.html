@@ -32,10 +32,10 @@
 <h2 id="prerequisites"><a class="header-link" href="#prerequisites"></a>Prerequisites</h2>
 <p>You need a recent version of Node installed (this is tested with Node 10 but might work with Node 8). Visit <a href="https://nodejs.org/en/">Node&#39;s website</a> to install it.</p>
 <p>To begin, clone the starter app from Github:</p>
-<pre class="hljs"><code>git <span class="hljs-built_in">clone</span> https://github.com/elylucas/nest-ngconf.git</code></pre><p>Install the Nest CLI via npm globall:</p>
-<pre class="hljs"><code>npm i -g @nestjs/cli</code></pre><p>Go into the <code>nest-ngconf</code> directory and install dependencies:</p>
+<pre class="hljs"><code>git <span class="hljs-built_in">clone</span> https://github.com/elylucas/nest-ngconf.git</code></pre><p>Go into the <code>nest-ngconf</code> directory and install dependencies:</p>
 <pre class="hljs"><code><span class="hljs-built_in">cd</span> nest-ngconf
-npm install</code></pre><p>If you are using VSCode, install the extension &#39;<a href="https://marketplace.visualstudio.com/itemdetails?itemName=rebornix.project-snippets">Project Snippets</a>&#39; if you would like to use the included snippets. If not, you can copy or type in the code straight from this guide.</p>
+npm install</code></pre><p>To start the dev server for both Ionic and Nest, run:</p>
+<pre class="hljs"><code>npm run dev</code></pre><p>Any changes you make to your project will automatically be recompiled when you save.</p>
 <p>That&#39;s all!</p>
 <h2 id="introduction"><a class="header-link" href="#introduction"></a>Introduction</h2>
 <p>In this workshop, we will cover how to build out a full-stack TypeScript application using Angular, Ionic, and NestJS. As Angular devs, you already know how powerful TypeScript is. We will take the power of TypeScript and learn how to use it on the backend.</p>
@@ -49,44 +49,26 @@ npm install</code></pre><p>If you are using VSCode, install the extension &#39;<
 <p>Start with the <code>master</code> branch and run <code>npm run dev</code> to start the Nest and Angular dev servers.</p>
 </blockquote>
 <h3 id="create-missions-nest-service"><a class="header-link" href="#create-missions-nest-service"></a>Create Missions Nest Service</h3>
-<p>Run the following command in your terminal to create the missions service:</p>
-<pre class="hljs"><code>nest g service missions</code></pre><p>This creates a Nest service file at <code>src/server/app/missions/missions.service.ts</code>.</p>
-<blockquote>
-<p>When you create a service through the Nest CLI, it automatically adds it to the list of providers in the main <code>app.module.ts</code> module, so you won&#39;t need to do it yourself.</p>
-</blockquote>
-<p>In this service class, we make use of the <code>MissionsRepository</code>, which is already provided as a part of the base solution. The purpose of this class is to provide a &quot;fake&quot; database for us to use, so we don&#39;t have to go through setting one up. The specifics of this class are outside the scope of this workshop.</p>
-<p>Update the <code>MissionsService</code> class to inject <code>MissionsRepository</code> and get back a list of Missions:</p>
-<p><strong>snippet: gsr-nest-missions-service</strong></p>
-<pre class="hljs"><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> MissionsService {
-  <span class="hljs-keyword">constructor</span>(<span class="hljs-params"><span class="hljs-keyword">private</span> missionsRepository: MissionsRepository</span>) {}
-
-  getMissions() {
-    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.missionsRepository.getList();
-  }
-}</code></pre><blockquote>
-<p>Import MissionsRepository from &#39;../data/missions.repository&#39;.</p>
-</blockquote>
+<p>Nest services are much like Angular services. They are simple classes that can be registered in the app module&#39;s providers, which lets them be injected into other components. Services are the ideal place for interacting with the database layer, performing business logic, or making calls into other APIs.</p>
+<p>Open the <code>MissionService</code> file and add the <code>getMissions</code> method:</p>
+<!-- gsr-nest-missions-service-getMissions -->
+<p><code>src/server/app/missions/missions.service.ts</code></p>
+<pre class="hljs"><code>getMissions() {
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.missionsRepository.getList();
+}</code></pre><p>In this service class, we make use of the <code>MissionsRepository</code>, which is already provided as a part of the base solution. The purpose of this class is to provide a &quot;fake&quot; database for us to use, so we don&#39;t have to go through setting one up. The specifics of this class are outside the scope of this workshop.</p>
 <h3 id="create-missions-nest-controller"><a class="header-link" href="#create-missions-nest-controller"></a>Create Missions Nest Controller</h3>
-<p>Run the following command in your terminal to create the missions controller:</p>
-<pre class="hljs"><code>nest g controller missions</code></pre><p>This command creates a Nest controller file at <code>src/server/app/missions/missions.service.ts</code>.</p>
-<blockquote>
-<p>Just like the service above, the CLI automatically adds controllers to the app module&#39;s list of controllers on your behalf.</p>
-</blockquote>
-<p>The controller imports the <code>MissionsService</code> and provide a method that responds to a <code>GET</code> request to return the list of missions. Update the controller:</p>
-<p><strong><em>snippet: gsr-nest-missions-controller</em></strong></p>
-<pre class="hljs"><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> MissionsController {
-  <span class="hljs-keyword">constructor</span>(<span class="hljs-params"><span class="hljs-keyword">private</span> missionsService: MissionsService</span>) {}
-
-  <span class="hljs-meta">@Get</span>()
-  async getMissions() {
-    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.missionsService.getMissions();
-  }
-}</code></pre><blockquote>
-<p>Import the <code>@Get</code> decorator from &#39;@nestjs/common&#39;.</p>
-</blockquote>
-<p>Open your browser to <a href="http://localhost:3000">http://localhost:3000</a>, and you should see a list of missions returned.</p>
+<p>Open up the <code>MissionControler</code> and note that it is has <code>@Controller(&#39;missions&#39;)</code> as a decorator on the class. This decorator instructs Nest that this class is responsible for requests at the /missions` endpoint.</p>
+<p>Next, add the GET handler in the <code>MissionController</code> class:</p>
+<!-- gsr-nest-missions-controller-getMissions -->
+<p><code>src/server/app/missions/missions.controller.ts</code></p>
+<pre class="hljs"><code><span class="hljs-meta">@Get</span>()
+async getMissions() {
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.missionsService.getMissions();
+}</code></pre><p>The <code>@Get</code> decorator on the <code>getMissions</code> method states that this is the method that will response to GET requests.</p>
+<p>Open your browser to <a href="http://localhost:3000/missions">http://localhost:3000/missions</a>, and you should see a list of missions returned.</p>
 <p>Notice, however, there is some meta-data on the model (the createdAt and createdBy fields), and we might not want this data returned to the client. The <code>MissionsRepository</code> is returning a type of <code>MissionEntity</code> (located at <code>src/server/app/data/mission.entity.ts</code>) from the get methods. We can use the <code>class-transformer</code> library to &quot;exclude&quot; certain members of the class from being returned. </p>
-<p>Open up the MissionEntity class, and add <code>@Exclude()</code> decorator to the <code>createdAt</code> and <code>createdBy</code> members like so:</p>
+<p>Open up the <code>MissionEntity</code> class, and add <code>@Exclude()</code> decorator to the <code>createdAt</code> and <code>createdBy</code> members like so:</p>
+<p><code>src/server/app/data/mission.entity.ts</code></p>
 <pre class="hljs"><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> MissionEntity {
   id?: <span class="hljs-built_in">number</span>;
   title: <span class="hljs-built_in">string</span>;
@@ -96,10 +78,7 @@ npm install</code></pre><p>If you are using VSCode, install the extension &#39;<
   createdAt: <span class="hljs-built_in">Date</span>;
   <span class="hljs-meta">@Exclude</span>()
   createdBy: <span class="hljs-built_in">string</span>;
-}</code></pre><blockquote>
-<p>Import <code>Exclude</code> from the <code>class-transformer</code> library</p>
-</blockquote>
-<p>For the properties to be excluded, we must run them through the <code>classToPlain</code> function from the <code>class-transformer</code> library. We could do this in the controller like so:</p>
+}</code></pre><p>For the properties to be excluded, we must run them through the <code>classToPlain</code> function from the <code>class-transformer</code> library. We could do this in the controller like so:</p>
 <pre class="hljs"><code><span class="hljs-meta">@Get</span>()
 async getMissions() {
   <span class="hljs-keyword">const</span> missionEntities = await <span class="hljs-keyword">this</span>.missionsService.getMissions();
@@ -109,21 +88,20 @@ async getMissions() {
 <p>Fortunately, Nest provides a mechanism for manipulating data on the way out called interceptors. Let&#39;s take a look at building one next.</p>
 <h3 id="nest-interceptors"><a class="header-link" href="#nest-interceptors"></a>Nest Interceptors</h3>
 <p>Nest interceptors are pretty much what they sound like; they intercept data from the controllers and let you inspect and modify that data.</p>
-<p>Create an interceptor from the CLI with the following command:</p>
-<pre class="hljs"><code>nest g interceptor util/data</code></pre><p>This command creates an interceptor file at <code>src/server/app/util/data.interceptor.ts</code>. Update the class in the file to the following:</p>
-<p><strong>snippet: gsr-nest-data-interceptor</strong></p>
-<pre class="hljs"><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> DataInterceptor <span class="hljs-keyword">implements</span> NestInterceptor {
-  intercept(context: ExecutionContext, next: CallHandler): Observable&lt;<span class="hljs-built_in">any</span>&gt; {
-    <span class="hljs-keyword">return</span> next.handle().pipe(
-      map(data =&gt; {
-        <span class="hljs-keyword">return</span> {
-          data: classToPlain(data)
-        };
-      })
-    );
-  }
+<p>We will use an interceptor to run the <code>classToPlain</code> method after the controller has processed the request.</p>
+<p>Update the <code>intercept</code> method in <code>DataInterceptor</code> to the following:</p>
+<!-- gsr-nest-data-interceptor-intercept -->
+<p><code>src/server/app/util/data.interceptor.ts</code></p>
+<pre class="hljs"><code>intercept(context: ExecutionContext, next: CallHandler): Observable&lt;<span class="hljs-built_in">any</span>&gt; {
+  <span class="hljs-keyword">return</span> next.handle().pipe(
+    map(data =&gt; {
+      <span class="hljs-keyword">return</span> {
+        data: classToPlain(data)
+      };
+    })
+  );
 }</code></pre><blockquote>
-<p>Import <code>map</code> from &#39;rxjs/observables&#39; and <code>classToPlain</code> from &#39;class-transformer&#39;</p>
+<p>Import <code>map</code> from &#39;rxjs/operators&#39; and <code>classToPlain</code> from &#39;class-transformer&#39;</p>
 </blockquote>
 <p>The <code>next.handle()</code> method is an observable stream that you can interact with like any other observable. Here, we use the <code>map</code> operator from RXJS to transform the output from one object to another. Specifically, we are using <code>classToPlain</code> to have <code>class-transformer</code> remove the excluded params from <code>MissionEntity</code>, just like the controller did earlier. </p>
 <p>We are also modifying the returned object to return an object that now has a <code>data</code> property on it, which contains the original response. Optionally, we can now return other properties the could be meta-data about the response, such as a request id or the time it took the request to complete.</p>
@@ -134,11 +112,8 @@ async getMissions() {
 <pre class="hljs"><code><span class="hljs-meta">@UseInterceptors</span>(DataInterceptor)
 <span class="hljs-meta">@Get</span>()
 async getMissions() { ... }</code></pre><p>A third option allows us to apply the interceptor to run globally by specifying it in the app module:</p>
-<pre class="hljs"><code><span class="hljs-keyword">import</span> { Module } from <span class="hljs-string">'@nestjs/common'</span>;
-<span class="hljs-keyword">import</span> { APP_INTERCEPTOR } from <span class="hljs-string">'@nestjs/core'</span>;
-<span class="hljs-keyword">import</span> { DataInterceptor } from <span class="hljs-string">'./util/data.interceptor'</span>;
-
-<span class="hljs-meta">@Module</span>({
+<p><code>src/server/app/app.module.ts</code></p>
+<pre class="hljs"><code><span class="hljs-meta">@Module</span>({
   providers: [
     {
       provide: APP_INTERCEPTOR,
@@ -146,45 +121,30 @@ async getMissions() { ... }</code></pre><p>A third option allows us to apply the
     },
   ],
 })
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> AppModule {}</code></pre><blockquote>
-<p>Import <code>APP_INTERCEPTOR</code> from &#39;@nestjs/core`.</p>
-</blockquote>
-<p>This method is used to make sure our interceptor runs everywhere.</p>
-<p>Once applied, hit the <code>/missions</code> endpoint again and you should see the list of missions minus the <code>createdAt</code> and <code>createdBy</code> meta-data.</p>
-<p>Bonus: Add some additional metadata properties to the data object (request id, timings, etc).
-Bonus: If the data coming back from the controller is undefined, throw a NotFoundException to send a 404 status.</p>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> AppModule {}</code></pre><p>This method is already setup in the demo project for the <code>DataInterceptor</code> and all the other pieces of Nest middleware we will implement in this workshop, so no need to do this yourself.</p>
+<p>Hit the <code>/missions</code> endpoint again and you should see the list of missions minus the <code>createdAt</code> and <code>createdBy</code> meta-data.</p>
 <p>Now that we have mission data returning from our API let&#39;s consume it from our Ionic app.</p>
-<h3 id="create-mission-interface"><a class="header-link" href="#create-mission-interface"></a>Create Mission Interface</h3>
-<p>First, we want to use a common model between our server and client to represent a Mission. However, we don&#39;t want to use the MissionEntity as that has member variables that aren&#39;t returned via the API (the <code>createdAt</code> and <code>createdBy</code> members) and it also has a dependency on the <code>class-transformer</code> library, which we don&#39;t want to import into our client app if we don&#39;t need to. Therefore, we create a lightweight mission interface that can be used from both our front and back ends.</p>
-<p>In the <code>src/shared/models</code> folder, create a file called <code>mission.ts</code> and add the following class to the file:</p>
-<p><strong>snippet: gsr-mission-model</strong></p>
+<h3 id="mission-interface"><a class="header-link" href="#mission-interface"></a>Mission Interface</h3>
+<p>We want to use a common model between our server and client to represent a Mission. However, we don&#39;t want to use the MissionEntity as that has member variables that aren&#39;t returned via the API (the <code>createdAt</code> and <code>createdBy</code> members) and it also has a dependency on the <code>class-transformer</code> library, which we don&#39;t want to import into our client app if we don&#39;t need to. Therefore, we create a lightweight mission interface that can be used from both our front and back ends.</p>
+<p>There is a <code>Mission</code> interface already defined in the shared folder at <code>src/shared/models/mission.model.ts</code>:</p>
 <pre class="hljs"><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> Mission {
   id?: <span class="hljs-built_in">number</span>;
   title: <span class="hljs-built_in">string</span>;
   reward: <span class="hljs-built_in">number</span>;
   active: <span class="hljs-built_in">boolean</span>;
-}</code></pre><h3 id="create-mission-angular-service"><a class="header-link" href="#create-mission-angular-service"></a>Create Mission Angular Service</h3>
-<p>Next, create an Angular service to retrieve the Missions from the API. Run the following command from your terminal:</p>
-<pre class="hljs"><code>npx ionic g service services/missions</code></pre><blockquote>
-<p>The Ionic CLI invokes the same generator the Angular CLI would, except in special cases where there are Ionic specific modifications to make to the file.</p>
-</blockquote>
-<p>This command creates a service at <code>src/client/app/services/missions.service.ts</code>. Take note that from here on out we have multiple files with the same name in this project (one on the client and one on the server), so make sure you are in the right file! Update the class in the client file to the following:</p>
-<p><strong>snippet: gsr-ng-missions-service</strong></p>
-<pre class="hljs"><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> MissionsService {
-  <span class="hljs-keyword">constructor</span>(<span class="hljs-params"><span class="hljs-keyword">private</span> httpClient: HttpClient</span>) {}
-
-  getMissions() {
-    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.httpClient
-      .get&lt;{data: Mission[]}&gt;(<span class="hljs-string">'http://localhost:3000/missions'</span>)
-      .pipe(map(response =&gt; response.data));
-  }
-}</code></pre><blockquote>
-<p>import <code>Mission</code> from the new model class at &#39;../../../shared/models/mission.model&#39;, HttpClient from &#39;@angular/common/http&#39;, and <code>map</code> from &#39;rxjs/operators&#39;.</p>
-</blockquote>
+}</code></pre><p>The <code>MissionEntity</code> database model implements this interface already to help make sure the main properties for a Mission stay consistent.</p>
+<h3 id="update-mission-angular-service-to-retrieve-missions"><a class="header-link" href="#update-mission-angular-service-to-retrieve-missions"></a>Update Mission Angular Service to Retrieve Missions</h3>
 <blockquote>
-<p>Since we are using HttpClient, make sure to add HttpClientModule (from <code>@angular/common/http</code>) in the app module&#39;s list of imports.</p>
+<p>Take note that we have multiple files with the same name in this solution (one in the client and one in the server), so make sure you are in the right file! </p>
 </blockquote>
-<h3 id="update-home-page"><a class="header-link" href="#update-home-page"></a>Update Home Page</h3>
+<p>Next, update the Angular service to retrieve the Missions from the API. Add the <code>getMissions</code> method:</p>
+<!-- gsr-ng-missions-service-getmissions -->
+<p><a href="vscode://file/./src/client/app/services/missions.service.ts">src/client/app/services/missions.service.ts</a></p>
+<pre class="hljs"><code>getMissions() {
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.httpClient
+    .get&lt;{ data: Mission[] }&gt;(<span class="hljs-string">'http://localhost:3000/missions'</span>)
+    .pipe(map(response =&gt; response.data));
+}</code></pre><h3 id="update-home-page"><a class="header-link" href="#update-home-page"></a>Update Home Page</h3>
 <p>Next, modify the <code>home.page.ts</code> file to call into the service and save the results to a local observable:</p>
 <p><strong>snippet: gsr-ng-homepage-ts</strong></p>
 <pre class="hljs"><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> HomePage <span class="hljs-keyword">implements</span> OnInit {
