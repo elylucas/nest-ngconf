@@ -1,141 +1,119 @@
 {
-  "old-mission-model": {
-    "prefix": "old-mission-model",
-    "body": [
-      "export interface Mission {",
-      "  id?: number;",
-      "  title: string;",
-      "  reward: number;",
-      "  active: boolean;",
-      "}"
-    ],
-    "description": ""
-  },
-  "old-nest-missions-service": {
-    "prefix": "old-nest-missions-service",
-    "body": [
-      "export class MissionsService {",
-      "  constructor(private missionsRepository: MissionsRepository) {}",
-      "",
-      "  getMissions() {",
-      "    return this.missionsRepository.getList();",
-      "  }",
-      "}"
-    ],
-    "description": "old-nest-missions-service"
-  },
-  "old-nest-missions-controller": {
-    "prefix": "old-nest-missions-controller",
-    "body": [
-      "export class MissionsController {",
-      "",
-      "  constructor(private missionsService: MissionsService) {}",
-      "",
-      "  @Get()",
-      "  async getMissions() {",
-      "    return this.missionsService.getMissions();",
-      "  }",
-      "}"
-    ],
-    "description": "old-nest-missions-controller"
-  },
-  "old-ng-missions-service": {
-		"prefix": "old-ng-missions-service",
+	"gsr-nest-missions-service-getMissions": {
+		"prefix": "gsr-nest-missions-service-getMissions",
 		"body": [
-			"export class MissionsService {",
-			"  constructor(private httpClient: HttpClient) {}",
-			"",
-			"  getMissions() {",
-			"    return this.httpClient",
-			"      .get<{data: Mission[]}>('http://localhost:3000/missions')",
-			"      .pipe(map(response => response.data));",
-			"  }",
+			"getMissions() {",
+			"  return this.missionsRepository.getList();",
 			"}"
 		],
-		"description": "old-ng-missions-service"
+		"description": "gsr-nest-missions-service-getMissions"
 	},
-  "old-nest-data-interceptor": {
-		"prefix": "old-nest-data-interceptor",
+	"gsr-nest-missions-controller-getMissions": {
+		"prefix": "gsr-nest-missions-controller-getMissions",
 		"body": [
-			"export class DataInterceptor implements NestInterceptor {",
-			"  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {",
-			"    return next.handle().pipe(",
-			"      map(data => {",
-			"        return {",
-			"          data: classToPlain(data)",
-			"        };",
-			"      })",
-			"    );",
-			"  }",
+			"@Get()",
+			"async getMissions() {",
+			"  return this.missionsService.getMissions();",
 			"}"
 		],
-		"description": "old-nest-data-interceptor"
+		"description": "gsr-nest-missions-controller-getMissions"
 	},
-  "old-ng-homepage-ts": {
-    "prefix": "old-ng-homepage-ts",
-    "body": [
-      "export class HomePage implements OnInit {",
-      "  missions: Observable<Mission[]>;",
-      "",
-      "  constructor(private missionsService: MissionsService) {}",
-      "",
-      "  ngOnInit() {",
-      "    this.missions = this.missionsService.getMissions();",
-      "  }",
-      "}"
-    ],
-    "description": "old-ng-homepage-ts"
-  },
-	"old-nest-missions-service-get": {
-		"prefix": "old-nest-missions-service-get",
+	"gsr-nest-data-interceptor-intercept": {
+		"body": [
+			"intercept(context: ExecutionContext, next: CallHandler): Observable<any> {",
+			"  return next.handle().pipe(",
+			"    map(data => {",
+			"      return {",
+			"        data: classToPlain(data)",
+			"      };",
+			"    })",
+			"  );",
+			"}"
+		]
+	},
+	"gsr-ng-missions-service-getmissions": {
+		"prefix": "gsr-ng-missions-service-getmissions",
+		"body": [
+			"getMissions() {",
+			"  return this.httpClient",
+			"    .get<{data: Mission[]}>('http://localhost:3000/missions')",
+			"    .pipe(map(response => response.data));",
+			"}"
+		],
+		"description": "gsr-ng-missions-service-getmissions"
+	},
+	"gsr-ng-missions-controller-oninit": {
+		"prefix": "gsr-ng-missions-controller-oninit",
+		"body": [
+			"ngOnInit() {",
+			"  this.missions = this.missionsService.getMissions();",
+			"}"
+		],
+		"description": "gsr-ng-missions-controller-oninit"
+	},
+	"gsr-nest-missions-service-getmission": {
+		"prefix": "gsr-nest-missions-service-getmission",
 		"body": [
 			"getMission(id: number) {",
 			"  return this.missionsRepository.get(id);",
 			"}"
 		],
-		"description": "old-nest-missions-service-get"
+		"description": "gsr-nest-missions-service-getmission"
 	},
-	"old-nest-missions-controller-get": {
-		"prefix": "old-nest-missions-controller-get",
+	"gsr-nest-missions-controller-getmission": {
+		"prefix": "gsr-nest-missions-controller-getmission",
 		"body": [
-			" @Get(':id')",
-			"  async getMission(@Param('id') id: number) {",
-			"    return this.missionsService.getMission(id);",
-			"  }"
+			"@Get(':id')",
+			"async getMission(@Param('id') id: number) {",
+			"  return this.missionsService.getMission(id);",
+			"}"
 		],
-		"description": "old-nest-missions-controller-get"
+		"description": "gsr-nest-missions-controller-getmission"
 	},
-  "old-nest-data-pipe": {
-    "prefix": "old-nest-data-pipe",
-    "body": [
-      "export class DataPipe implements PipeTransform {",
-      "  transform(value: any, metadata: ArgumentMetadata) {",
-      "    const { metatype } = metadata;",
-      "    const convertedValue = plainToClass(metatype, value);",
-      "    return convertedValue;",
-      "  }",
-      "}"
-    ],
-    "description": "old-nest-data-pipe"
-  },
-  "old-ng-missions-service-getbyid": {
-		"prefix": "old-ng-missions-service-getbyid",
+	"gsr-nest-data-pipe-transform": {
+		"prefix": "gsr-nest-data-pipe-transform",
 		"body": [
+			"transform(value: any, metadata: ArgumentMetadata) {",
+			"  const { metatype } = metadata;",
+			"  const convertedValue = plainToClass(metatype, value);",
+			"  return convertedValue;",
+			"}"
+		],
+		"description": "gsr-nest-data-pipe-transform"
+	},
+	"gsr-ng-missions-service-getmissionbyid": {
+		"prefix": "gsr-ng-missions-service-getmissionbyid",
+		"body": [
+			"",
 			"getMissionById(id: number) {",
 			"  return this.httpClient",
-			"    .get<{data: Mission}>('http://localhost:3000/missions/' + id)",
+			"    .get<{data: Mission}>(`http://localhost:3000/missions/${id}`)",
 			"    .pipe(map(response => response.data));",
 			"}"
 		],
-		"description": "old-ng-missions-service-getbyid"
+		"description": "gsr-ng-missions-service-getmissionbyid"
 	},
-  "old-ng-homepage-openMission": {
-		"prefix": "old-ng-homepage-openMission",
+	"gsr-ng-missionform-component-ngoninit": {
+		"prefix": "gsr-ng-missionform-component-ngoninit",
 		"body": [
-			"async openMission(id: number) {",
+			"ngOnInit() {",
+			"  const id = this.navParams.data.id;",
+			"  if (id) {",
+			"    this.mission$ = this.missionsService.getMissionById(id);",
+			"  } else {",
+			"    this.mission$ = of({ active: false } as any);",
+			"  }",
+			"}"
+		],
+		"description": "gsr-ng-missionform-component-ngoninit"
+	},
+	"gsr-ng-home-page-openmission": {
+		"prefix": "gsr-ng-home-page-openmission",
+		"body": [
+			"async openMission(mission: Mission) {",
 			"  const modal = await this.modalController.create({",
 			"    component: MissionFormComponent,",
-			"    componentProps: { id }",
+			"    componentProps: { id: mission.id }",
 			"  });",
 			"  await modal.present();",
 			"  const { data = {} } = await modal.onDidDismiss();",
@@ -144,126 +122,85 @@
 			"  }",
 			"}"
 		],
-		"description": "old-ng-homepage-openMission"
+		"description": "gsr-ng-home-page-openmission"
 	},
-  "old-ng-missionform-ts": {
-    "prefix": "old-ng-missionform-ts",
-    "body": [
-      "export class MissionFormComponent implements OnInit {",
-      "  mission$: Observable<Mission>;",
-      "",
-      "  constructor(",
-      "    private navParams: NavParams,",
-      "    private missionsService: MissionsService,",
-      "    private modalCtrl: ModalController",
-      "  ) {}",
-      "",
-      "  ngOnInit() {",
-      "    const id = this.navParams.data.id;",
-      "    if (id) {",
-      "      this.mission$ = this.missionsService.getMissionById(id);",
-      "    } else {",
-      "      this.mission$ = of({ active: false } as any);",
-      "    }",
-      "  }",
-      "",
-      "  close() {",
-      "    this.modalCtrl.dismiss({",
-      "      refreshMissions: false",
-      "    });",
-      "  }",
-      "",
-      "  submit(mission: Mission) {",
-      "    console.log(mission);",
-      "  }",
-      "}"
-    ],
-    "description": "old-ng-missionform-ts"
-  },
-  "old-nest-missions-service-createupdatedelete": {
-    "prefix": "old-nest-missions-service-createupdatedelete",
-    "body": [
-      "createMission(mission: MissionEntity) {",
-      "    return this.missionsRepository.create(mission);",
-      "  }",
-      "",
-      "  async updateMission(id: number, mission: MissionEntity) {",
-      "    const current = await this.getMission(id);",
-      "    if (!current) {",
-      "      return null;",
-      "    }",
-      "    mission.createdAt = current.createdAt;",
-      "    mission.createdBy = current.createdBy;",
-      "    return this.missionsRepository.update(id, mission);",
-      "  }",
-      "",
-      "  deleteMission(id: number) {",
-      "    return this.missionsRepository.delete(id);",
-      "  }"
-    ],
-    "description": "old-nest-missions-service-createupdatedelete"
-  },
-  "old-nest-missions-controller-createupdatedelete": {
-    "prefix": "old-nest-missions-controller-createupdatedelete",
-    "body": [
-      "@Post()",
-      "async createMission(@Body() mission: MissionEntity) {",
-      "  return this.missionsService.createMission(mission);",
-      "}",
-      "",
-      "@Put(':id')",
-      "async updateMission(@Param('id') id: number, @Body() mission: MissionEntity) {",
-      "  return this.missionsService.updateMission(id, mission);",
-      "}",
-      "",
-      "@Delete(':id')",
-      "async deleteMission(@Param('id') id: number) {",
-      "  return this.missionsService.deleteMission(id);",
-      "}"
-    ],
-    "description": "old-nest-missions-controller-createupdatedelete"
-  },
-	"old-ng-homepage-newmission": {
-		"prefix": "old-ng-homepage-newmission",
+	"gsr-nest-missions-service-createupdatedelete": {
+		"prefix": "gsr-nest-missions-service-createupdatedelete",
 		"body": [
-			"async newMission() {",
-			"  const modal = await this.modalController.create({",
-			"    component: MissionFormComponent",
-			"  });",
-			"  await modal.present();",
-			"  const { data } = await modal.onDidDismiss();",
-			"  if (data.refreshMissions) {",
-			"    this.missions = this.missionsService.getMissions();",
+			"createMission(mission: MissionEntity) {",
+			"  return this.missionsRepository.create(mission);",
+			"}",
+			"",
+			"async updateMission(id: number, mission: MissionEntity) {",
+			"  const current = await this.getMission(id);",
+			"  if (!current) {",
+			"    return null;",
 			"  }",
+			"  mission.createdAt = current.createdAt;",
+			"  mission.createdBy = current.createdBy;",
+			"  return this.missionsRepository.update(id, mission);",
+			"}",
+			"",
+			"deleteMission(id: number) {",
+			"  return this.missionsRepository.delete(id);",
 			"}"
 		],
-		"description": "old-ng-homepage-newmission"
+		"description": "gsr-nest-missions-service-createupdatedelete"
 	},
-	"old-ng-missions-service-createupdatedelete": {
-		"prefix": "old-ng-missions-service-createupdatedelete",
+	"gsr-nest-missions-controller-createupdatedelete": {
+		"prefix": "gsr-nest-missions-controller-createupdatedelete",
+		"body": [
+			"@Post()",
+			"async createMission(@Body() mission: MissionEntity) {",
+			"  return this.missionsService.createMission(mission);",
+			"}",
+			"",
+			"@Put(':id')",
+			"async updateMission(@Param('id') id: number, @Body() mission: MissionEntity) {",
+			"  return this.missionsService.updateMission(id, mission);",
+			"}",
+			"",
+			"@Delete(':id')",
+			"async deleteMission(@Param('id') id: number) {",
+			"  return this.missionsService.deleteMission(id);",
+			"}"
+		],
+		"description": "gsr-nest-missions-controller-createupdatedelete"
+	},
+	"gsr-ng-missions-service-createupdatedelete": {
+		"prefix": "gsr-ng-missions-service-createupdatedelete",
 		"body": [
 			"createMission(mission: Mission) {",
-			"  return this.httpClient",
-			"    .post<Mission>(`http://localhost:3000/missions`, mission)",
-			"    .toPromise().catch(response => { throw response.error; });",
-			"}",
+			"    return this.httpClient",
+			"      .post<Mission>(`http://localhost:3000/missions`, mission)",
+			"      .toPromise()",
+			"      .catch(response => {",
+			"        throw response.error;",
+			"      });",
+			"  }",
 			"",
-			"updateMission(mission: Mission) {",
-			"  return this.httpClient",
-			"    .put<Mission>(`http://localhost:3000/missions/${mission.id}`, mission)",
-			"    .toPromise().catch(response => { throw response.error; });",
-			"}",
+			"  updateMission(mission: Mission) {",
+			"    return this.httpClient",
+			"      .put<Mission>(`http://localhost:3000/missions/${mission.id}`, mission)",
+			"      .toPromise()",
+			"      .catch(response => {",
+			"        throw response.error;",
+			"      });",
+			"  }",
 			"",
-			"deleteMission(mission: Mission) {",
-			"  return this.httpClient",
-			"    .delete<Mission>(`http://localhost:3000/missions/${mission.id}`)",
-			"    .toPromise().catch(response => { throw response.error; });",
-			"}"
+			"  deleteMission(mission: Mission) {",
+			"    return this.httpClient",
+			"      .delete<Mission>(`http://localhost:3000/missions/${mission.id}`)",
+			"      .toPromise()",
+			"      .catch(response => {",
+			"        throw response.error;",
+			"      });",
+			"  }"
 		],
-		"description": "old-ng-missions-service-createupdatedelete"
+		"description": "gsr-ng-missions-service-createupdatedelete"
 	},
-	"old-ng-missionform-submit-method": {
-		"prefix": "old-ng-missionform-submit-method",
+	"gsr-ng-mission-form-component-submit": {
+		"prefix": "gsr-ng-mission-form-component-submit",
 		"body": [
 			"async submit(mission: Mission) {",
 			"  try {",
@@ -286,140 +223,142 @@
 			"  }",
 			"}"
 		],
-		"description": "old-ng-missionform-submit-method"
-  },
-  "old-ng-missionform-delete": {
-		"prefix": "old-ng-missionform-delete",
-		"body": [
-			"async delete(mission: Mission) {",
-			"    const alert = await this.alertController.create({",
-			"      header: 'Delete Mission?',",
-			"      message: 'Are you sure you want to delete this mission?',",
-			"      buttons: [",
-			"        {",
-			"          text: 'No',",
-			"          role: 'cancel',",
-			"          cssClass: 'secondary'",
-			"        },",
-			"        {",
-			"          text: 'Yes',",
-			"          handler: async () => {",
-			"            try {",
-			"              await this.missionsService.deleteMission(mission);",
-			"              this.modalCtrl.dismiss({",
-			"                refreshMissions: true",
-			"              });",
-			"            } catch (error) {",
-			"              const deleteAlert = await this.alertController.create({",
-			"                header: 'API Error',",
-			"                subHeader: error.error,",
-			"                message: error.message,",
-			"                buttons: ['OK']",
-			"              });",
-			"              await deleteAlert.present();",
-			"            }",
-			"          }",
-			"        }",
-			"      ]",
-			"    });",
-			"    await alert.present();",
-			"  }"
-		],
-		"description": "old-ng-missionform-delete"
+		"description": "gsr-ng-mission-form-component-submit"
 	},
-  "old-ng-missions-service-handleerror": {
-		"prefix": "old-ng-missions-service-handleerror",
+	"gsr-ng-home-page-newmission": {
+		"prefix": "gsr-ng-home-page-newmission",
 		"body": [
-			"handleError(response: any) {",
-			"    const { error } = response;",
-			"    if (error.statusCode === 400) {",
-			"      let message = '';",
-			"      error.message.forEach((msg: any) => {",
-			"        const keys = Object.keys(msg.constraints);",
-			"        keys.forEach(k => {",
-			"          message += msg.constraints[k] + '<br />';",
-			"        });",
-			"      });",
-			"      throw {message};",
-			"    }",
-			"    throw error;",
-			"  }"
-		],
-		"description": "old-ng-missions-service-handleerror"
-  },
-  "old-ng-auth-interceptor": {
-		"prefix": "old-ng-auth-interceptor",
-		"body": [
-			"import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';",
-			"import { Injectable } from '@angular/core';",
-			"import { Observable } from 'rxjs';",
-			"",
-			"@Injectable()",
-			"export class AuthInterceptor implements HttpInterceptor {",
-			"  constructor() {}",
-			"",
-			"  intercept(",
-			"    request: HttpRequest<any>,",
-			"    next: HttpHandler",
-			"  ): Observable<HttpEvent<any>> {",
-			"    const authToken = window.localStorage.getItem('auth-token');",
-			"",
-			"    if (!authToken) {",
-			"      return next.handle(request);",
-			"    }",
-			"",
-			"    const newRequest = request.clone({",
-			"      setHeaders: {",
-			"        Authorization: 'Bearer ' + authToken",
-			"      }",
-			"    });",
-			"",
-			"    return next.handle(newRequest);",
-			"  }",
-			"}",
-			""
-		],
-		"description": "old-ng-auth-interceptor"
-	},
-	"old-nest-authguard": {
-		"prefix": "old-nest-authguard",
-		"body": [
-			"export class AuthGuard implements CanActivate {",
-			"  constructor(private reflector: Reflector) {}",
-			"",
-			"  canActivate(context: ExecutionContext): boolean {",
-			"    const requiredRoles =",
-			"      this.reflector.get<string[]>('roles', context.getHandler()) || [];",
-			"",
-			"    if (requiredRoles.length === 0) {",
-			"      return true;",
-			"    }",
-			"",
-			"    const request = context.switchToHttp().getRequest();",
-			"",
-			"    if (",
-			"      !request.headers.authorization ||",
-			"      !request.headers.authorization.startsWith('Bearer ')",
-			"    ) {",
-			"      return false;",
-			"    }",
-			"",
-			"    const token = request.headers.authorization.split(' ')[1];",
-			"",
-			"    const userRoles = [];",
-			"",
-			"    if (token === 'user-token') {",
-			"      userRoles.push('user');",
-			"    }",
-			"    if (token === 'admin-token') {",
-			"      userRoles.push('user', 'admin');",
-			"    }",
-			"",
-			"    const hasRole = userRoles.some(role => requiredRoles.indexOf(role) > -1);",
-			"    return hasRole;",
+			"async newMission() {",
+			"  const modal = await this.modalController.create({",
+			"    component: MissionFormComponent",
+			"  });",
+			"  await modal.present();",
+			"  const { data = {} } = await modal.onDidDismiss();",
+			"  if (data.refreshMissions) {",
+			"    this.missions = this.missionsService.getMissions();",
 			"  }",
 			"}"
 		],
-		"description": "old-nest-authguard"
+		"description": "gsr-ng-home-page-newmission"
+	},
+	"gsr-ng-mission-form-component-delete": {
+		"prefix": "gsr-ng-mission-form-component-delete",
+		"body": [
+			"async delete(mission: Mission) {",
+			"  const alert = await this.alertController.create({",
+			"    header: 'Delete Mission?',",
+			"    message: 'Are you sure you want to delete this mission?',",
+			"    buttons: [",
+			"      {",
+			"        text: 'No',",
+			"        role: 'cancel',",
+			"        cssClass: 'secondary'",
+			"      },",
+			"      {",
+			"        text: 'Yes',",
+			"        handler: async () => {",
+			"          try {",
+			"            await this.missionsService.deleteMission(mission);",
+			"            this.modalCtrl.dismiss({",
+			"              refreshMissions: true",
+			"            });",
+			"          } catch (error) {",
+			"            const deleteAlert = await this.alertController.create({",
+			"              header: 'API Error',",
+			"              subHeader: error.error,",
+			"              message: error.message,",
+			"              buttons: ['OK']",
+			"            });",
+			"            await deleteAlert.present();",
+			"          }",
+			"        }",
+			"      }",
+			"    ]",
+			"  });",
+			"  await alert.present();",
+			"}"
+		],
+		"description": "gsr-ng-mission-form-component-delete"
+	},
+	"gsr-ng-missions-service-handleerror": {
+		"prefix": "gsr-ng-missions-service-handleerror",
+		"body": [
+			"handleError(response: any) {",
+			"  const { error } = response;",
+			"  if (error.statusCode === 400) {",
+			"    let message = '';",
+			"    error.message.forEach((msg: any) => {",
+			"      const keys = Object.keys(msg.constraints);",
+			"      keys.forEach(k => {",
+			"        message += msg.constraints[k] + '<br />';",
+			"      });",
+			"    });",
+			"    throw { message };",
+			"  }",
+			"  throw error;",
+			"}"
+		],
+		"description": "gsr-ng-missions-service-handleerror"
+	},
+	"gsr-nest-auth-guard-canactivate": {
+		"prefix": "gsr-nest-auth-guard-canactivate",
+		"body": [
+			"canActivate(context: ExecutionContext): boolean {",
+			"  const requiredRoles =",
+			"    this.reflector.get<string[]>('roles', context.getHandler()) || [];",
+			"",
+			"  if (requiredRoles.length === 0) {",
+			"    return true;",
+			"  }",
+			"",
+			"  const request = context.switchToHttp().getRequest();",
+			"",
+			"  if (",
+			"    !request.headers.authorization ||",
+			"    !request.headers.authorization.startsWith('Bearer ')",
+			"  ) {",
+			"    return false;",
+			"  }",
+			"",
+			"  const token = request.headers.authorization.split(' ')[1];",
+			"",
+			"  const userRoles = [];",
+			"",
+			"  if (token === 'user-token') {",
+			"    userRoles.push('user');",
+			"  }",
+			"  if (token === 'admin-token') {",
+			"    userRoles.push('user', 'admin');",
+			"  }",
+			"",
+			"  const hasRole = userRoles.some(role => requiredRoles.indexOf(role) > -1);",
+			"  return hasRole;",
+			"}"
+		],
+		"description": "gsr-nest-auth-guard-canactivate"
+	},
+	"gsr-ng-auth-interceptor-intercept": {
+		"prefix": "gsr-ng-auth-interceptor-intercept",
+		"body": [
+			"intercept(",
+			"  request: HttpRequest<any>,",
+			"  next: HttpHandler",
+			"): Observable<HttpEvent<any>> {",
+			"  const authToken = window.localStorage.getItem('auth-token');",
+			"",
+			"  if (!authToken) {",
+			"    return next.handle(request);",
+			"  }",
+			"",
+			"  const newRequest = request.clone({",
+			"    setHeaders: {",
+			"      Authorization: `Bearer ${authToken}`",
+			"    }",
+			"  });",
+			"",
+			"  return next.handle(newRequest);",
+			"}"
+		],
+		"description": "gsr-ng-auth-interceptor-intercept"
 	}
 }
