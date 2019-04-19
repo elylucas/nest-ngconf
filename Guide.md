@@ -681,15 +681,17 @@ With all that now in place, we should have a fully functioning app for our space
 
 When we submit an invalid form (like when a title or reward is missing), we get back a server error that is not too helpful. Next, we will see how to put proper validation in place in our API to make sure the models are valid before we even send them to the database.
 
-## Lab 4
-
-> To start fresh at lab4, you can checkout the lab4-start branch in git
-
 ### Validation
+
+We can now create and update missions, but if we try to submit an incomplete mission, we get a server error that's not entirely helpful. We will see how to use the `class-validator` library to help provide validation for our MissionEntity, and how to return back a proper 400 Bad Request error when a validation error occurs.
+
+Class validator offers up many validators that can be applied to members of classes through decorators. We will use a few here to make sure that when an instance of `MissionEntity` is passed in, that there is a value and that the value type is correct.
 
 ### Add Nest Validators to MissionEntity
 
-Open up `mission.entity.ts` and add some validators to the class.
+Open up `MissionEntity` and add some validation decorators to the class:
+
+`src/server/app/data/mission.entity.ts`
 
 ```typescript
 export class MissionEntity {
@@ -717,7 +719,7 @@ export class MissionEntity {
 
 > The IsDefined, IsString, IsNotEmpty, IsNumber, and IsBoolean validators are imported from `class-validator`;
 
-Add the Nest `ValidationPipe` to the list of imports in the server `app.module.ts`:
+Nest Pipes (that we used earlier to convert types on the way in) are also good at validation. In fact, Nest includes a ValidationPipe that utilizes `class-validator` out of the box. Instead of creating our own validation pipe, we us the built in one. Its already setup in the servers 'AppModule' for us:
 
 ```typescript
 {
@@ -728,9 +730,15 @@ Add the Nest `ValidationPipe` to the list of imports in the server `app.module.t
 
 > `ValidationPipe` is imported from '@nestjs/common`.
 
-In the client 'mission.service.ts` file, add a `handleError` method the HTTP responses can use to parse the validation error into a single string:
+### Update Angular Mission Service to Process Validation Errors
 
-***snippet: gsr-ng-missions-service-handleerror***
+Now when an invalid mission is submitted, the API will through a validation error with helpful data around why the error happened. Let's use that error to construct a message to show the user.
+
+In the **client** `MissionService` add a `handleError` method that the HTTP responses can use to parse the validation error into a single string:
+
+<!--gsr-ng-missions-service-handleerror -->
+
+`src/client/app/services/missions.service.ts`
 
 ```typescript
 handleError(response: any) {
@@ -749,7 +757,7 @@ handleError(response: any) {
 }
 ```
 
-Then update the create, update, and delete methods to use `handleError`:
+Then update the create, update, and delete methods to use `handleError` in the promises catch handler:
 
 ```typescript
 createMission(mission: Mission) {
@@ -762,6 +770,10 @@ createMission(mission: Mission) {
 > Make sure to update `updateMission` and `deleteMission` as well.
 
 Now, when you submit an invalid form, you get a proper 400 error back. In this example, we loop through the error objects and construct a string showing all the validation issues, but you could do a lot more with it. The errors contain the validation rule that caused the error and the property for which the validation was applied to, so you could go fancier in showing the errors than a simple alert modal.
+
+## Lab 4
+
+> To start fresh at lab4, you can checkout the lab4-start branch in git
 
 ### Authentication
 
@@ -777,15 +789,11 @@ We will also set up a simple role system that contains two roles, users and admi
 
 ### Create Roles Decorator 
 
-Let's start off by creating a `Roles` decorator that we can use on our controller methods to specify which roles we want the auth guard to check. Nest makes it simple to create a TypeScript decorator for this use case. From the command line, issue this command:
+In our base project, we have a `Roles` decorator that we can use on our controller methods to specify which roles we want the upcoming auth guard to check. 
 
-```bash
-nest g decorator util/roles
-```
+To specify which roles we want a route handler to check for access, we use `@Roles('...')` on each of the controller's methods. In `MissionsController` add `@Roles` and specify the role to the following methods:
 
-The roles decorator is good to go and ready to use, so we won't need to make any modifications to the file Nest generated.
-
-To specify which roles we want a route handler to check for access, we use `@Roles('...')` on each of the controller's methods. In `missions.controller.ts` add `@Roles` and specify the role to the following methods:
+`src/server/app/missions/missions.controller.ts`
 
 ```typescript
 @Post()
@@ -801,57 +809,47 @@ async updateMission(...) { ... }
 async deleteMission(...) { ... }
 ```
 
-### Crea9te Nest Guard
+### Create Nest Guard
 
-Next, create the auth guard with the following CLI command:
+Open the **server** `AuthGuard` file, and replace the class's `canActivate` method with the following:
 
-```bash
-nest g guard util/auth
-```
+<!-- grr-nest-auth-guard-canactivate -->
 
-Open up the `src/server/app/util/auth.guard.ts` file, and replace the class with the following:
-
-***snipppet: gsr-nest-authguard***
+`src/server/app/util/auth.guard.ts`
 
 ```typescript
-export class AuthGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+canActivate(context: ExecutionContext): boolean {
+  const requiredRoles =
+    this.reflector.get<string[]>('roles', context.getHandler()) || [];
 
-  canActivate(context: ExecutionContext): boolean {
-    const requiredRoles =
-      this.reflector.get<string[]>('roles', context.getHandler()) || [];
-
-    if (requiredRoles.length === 0) {
-      return true;
-    }
-
-    const request = context.switchToHttp().getRequest();
-
-    if (
-      !request.headers.authorization ||
-      !request.headers.authorization.startsWith('Bearer ')
-    ) {
-      return false;
-    }
-
-    const token = request.headers.authorization.split(' ')[1];
-
-    const userRoles = [];
-
-    if (token === 'user-token') {
-      userRoles.push('user');
-    }
-    if (token === 'admin-token') {
-      userRoles.push('user', 'admin');
-    }
-
-    const hasRole = userRoles.some(role => requiredRoles.indexOf(role) > -1);
-    return hasRole;
+  if (requiredRoles.length === 0) {
+    return true;
   }
+
+  const request = context.switchToHttp().getRequest();
+
+  if (
+    !request.headers.authorization ||
+    !request.headers.authorization.startsWith('Bearer ')
+  ) {
+    return false;
+  }
+
+  const token = request.headers.authorization.split(' ')[1];
+
+  const userRoles = [];
+
+  if (token === 'user-token') {
+    userRoles.push('user');
+  }
+  if (token === 'admin-token') {
+    userRoles.push('user', 'admin');
+  }
+
+  const hasRole = userRoles.some(role => requiredRoles.indexOf(role) > -1);
+  return hasRole;
 }
 ```
-
-> Import `Reflector` from `@nestjs/core`.
 
 Let's break the above code down. 
 
@@ -863,7 +861,7 @@ We declare a `usersRoles` array that contains the roles the user belongs to. In 
 
 Last, we make sure the authenticated request contains a role that the API call requires.
 
-Add the new auth guard to the app module providers:
+This guard is already registered with the **server's** `AppModule` providers, but here is how it's done for your reference:
 
 ```typescript
 {
@@ -872,53 +870,44 @@ Add the new auth guard to the app module providers:
 }
 ```
 
-> Import `APP_GUARD` from '@nestjs/core' and `AuthGuard` from './util/auth.guard'.
-
 If you try to use the app now, you see that you can view the list of missions and go to a mission's details, but you can't create, edit, or delete them.
 
 The menu button in the top left lets you "login" as a user or admin, and it keeps track of your choice in local storage. However, we don't currently send the Bearer token in the HTTP request. We will do that next.
 
 ### Create Angular HTTP Interceptor
 
-In Angular, HTTP Interceptors adds a piece of middleware that will let you modify the outgoing request. This interceptor is a perfect place to add the authorization header if our user is authenticated.
+In Angular, HTTP Interceptors adds a piece of middleware that will let you modify the outgoing request. Interceptors are a perfect place to add the authorization header if our user is authenticated.
 
-In the `src/client/app/util` folder, create a new file called `auth.interceptor.ts` and use the following code for it:
+Open the **client** `AuthInterceptor` class and update the `intercept` method to:
 
-***snippet: gsr-ng-auth-interceptor***
+<!-- gsr-ng-auth-interceptor-intercept --->
+
+`src/client/app/util/auth.interceptor.ts`
 
 ```typescript
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+intercept(
+  request: HttpRequest<any>,
+  next: HttpHandler
+): Observable<HttpEvent<any>> {
+  const authToken = window.localStorage.getItem('auth-token');
 
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
-  constructor() {}
-
-  intercept(
-    request: HttpRequest<any>,
-    next: HttpHandler
-  ): Observable<HttpEvent<any>> {
-    const authToken = window.localStorage.getItem('auth-token');
-
-    if (!authToken) {
-      return next.handle(request);
-    }
-
-    const newRequest = request.clone({
-      setHeaders: {
-        Authorization: `Bearer ${authToken}`
-      }
-    });
-
-    return next.handle(newRequest);
+  if (!authToken) {
+    return next.handle(request);
   }
+
+  const newRequest = request.clone({
+    setHeaders: {
+      Authorization: `Bearer ${authToken}`
+    }
+  });
+
+  return next.handle(newRequest);
 }
 ```
 
 Interceptors are a simple class that implements an `intercept` method. In our `intercept`, we check to make sure if the user is currently "logged in" (by seeing if they have an auth-token value in local storage, which is set by the login screen). If not, the request goes through without any modification. If there is an auth-token, we clone the original request (because requests are immutable, we need a new copy to make changes to it) and add an `Authorization` header with the auth-token for its value.
 
-Add the new interceptor to the client's `app.module.ts` list of providers:
+The interceptor is already registered in our Angular apps main app module providers:
 
 ```typescript
 {
@@ -928,7 +917,6 @@ Add the new interceptor to the client's `app.module.ts` list of providers:
 }
 ```
 
-> Import `HTTP_INTERCEPTORS` from '@angular/common/http' and `AuthInterceptor` from './util/auth.interceptor'.
 
 With the authentication in place, depending on if you log in as a user or admin, you can continue adding, editing, and deleting missions.
 
