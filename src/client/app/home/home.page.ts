@@ -19,7 +19,7 @@ export class HomePage implements OnInit {
 
   }
 
-  async openMission(id: number) {
+  async openMission(mission: Mission) {
 
   }
 
