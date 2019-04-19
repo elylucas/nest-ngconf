@@ -8,15 +8,24 @@ import {
 } from 'class-validator';
 import { Mission } from '../../../shared/models/mission.model';
 
-export class MissionEntity implements Mission {
+export class MissionEntity {
   id?: number;
+
+  @IsDefined()
+  @IsString()
+  @IsNotEmpty()
   title: string;
+
+  @IsDefined()
+  @IsNumber()
   reward: number;
+
+  @IsDefined()
+  @IsBoolean()
   active: boolean;
 
   @Exclude()
-  createdAt = new Date();
-
+  createdAt: Date = new Date();
   @Exclude()
   createdBy = 'user';
 }
