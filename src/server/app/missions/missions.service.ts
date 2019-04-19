@@ -6,4 +6,7 @@ import { MissionEntity } from '../data/mission.entity';
 export class MissionsService {
   constructor(private missionsRepository: MissionsRepository) {}
 
+  getMissions() {
+    return this.missionsRepository.getList();
+  }
 }

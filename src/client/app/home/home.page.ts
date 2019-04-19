@@ -8,23 +8,21 @@ import { MissionFormComponent } from '../mission-form/mission-form.component';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
-  styleUrls: ['home.page.scss'],
+  styleUrls: ['home.page.scss']
 })
 export class HomePage implements OnInit {
   missions: Observable<Mission[]>;
 
-  constructor(private missionsService: MissionsService, private modalController: ModalController) {}
+  constructor(
+    private missionsService: MissionsService,
+    private modalController: ModalController
+  ) {}
 
   ngOnInit() {
-
+    this.missions = this.missionsService.getMissions();
   }
 
-  async openMission(id: number) {
+  async openMission(mission: Mission) {}
 
-  }
-
-  async newMission() {
-
-  }
-
+  async newMission() {}
 }
