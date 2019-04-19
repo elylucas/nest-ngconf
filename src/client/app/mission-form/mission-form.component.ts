@@ -20,12 +20,7 @@ export class MissionFormComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    const id = this.navParams.data.id;
-    if (id) {
-      this.mission$ = this.missionsService.getMissionById(id);
-    } else {
-      this.mission$ = of({ active: false } as any);
-    }
+
   }
 
   close() {
@@ -35,57 +30,10 @@ export class MissionFormComponent implements OnInit {
   }
 
   async submit(mission: Mission) {
-    try {
-      if (mission.id) {
-        await this.missionsService.updateMission(mission);
-      } else {
-        await this.missionsService.createMission(mission);
-      }
-      this.modalCtrl.dismiss({
-        refreshMissions: true
-      });
-    } catch (error) {
-      const alert = await this.alertController.create({
-        header: 'API Error',
-        subHeader: error.error,
-        message: error.message,
-        buttons: ['OK']
-      });
-      await alert.present();
-    }
+    console.log(mission);
   }
 
   async delete(mission: Mission) {
-    const alert = await this.alertController.create({
-      header: 'Delete Mission?',
-      message: 'Are you sure you want to delete this mission?',
-      buttons: [
-        {
-          text: 'No',
-          role: 'cancel',
-          cssClass: 'secondary'
-        },
-        {
-          text: 'Yes',
-          handler: async () => {
-            try {
-              await this.missionsService.deleteMission(mission);
-              this.modalCtrl.dismiss({
-                refreshMissions: true
-              });
-            } catch (error) {
-              const deleteAlert = await this.alertController.create({
-                header: 'API Error',
-                subHeader: error.error,
-                message: error.message,
-                buttons: ['OK']
-              });
-              await deleteAlert.present();
-            }
-          }
-        }
-      ]
-    });
-    await alert.present();
+
   }
 }

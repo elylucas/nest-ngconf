@@ -16,30 +16,15 @@ export class HomePage implements OnInit {
   constructor(private missionsService: MissionsService, private modalController: ModalController) {}
 
   ngOnInit() {
-    this.missions = this.missionsService.getMissions();
+
   }
 
   async openMission(id: number) {
-    const modal = await this.modalController.create({
-      component: MissionFormComponent,
-      componentProps: { id }
-    });
-    await modal.present();
-    const { data = {} } = await modal.onDidDismiss();
-    if (data.refreshMissions) {
-      this.missions = this.missionsService.getMissions();
-    }
+
   }
 
   async newMission() {
-    const modal = await this.modalController.create({
-      component: MissionFormComponent
-    });
-    await modal.present();
-    const { data = {} } = await modal.onDidDismiss();
-    if (data.refreshMissions) {
-      this.missions = this.missionsService.getMissions();
-    }
+
   }
 
 }
