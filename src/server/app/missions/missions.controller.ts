@@ -1,7 +1,7 @@
-import { Controller, Get, Param, Post, Body, Put, Delete } from '@nestjs/common';
-import { MissionsService } from './missions.service';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { MissionEntity } from '../data/mission.entity';
 import { Roles } from '../util/roles.decorator';
+import { MissionsService } from './missions.service';
 
 @Controller('missions')
 export class MissionsController {
@@ -10,5 +10,10 @@ export class MissionsController {
   @Get()
   async getMissions() {
     return this.missionsService.getMissions();
+  }
+
+  @Get(':id')
+  async getMission(@Param('id') id: number) {
+    return this.missionsService.getMission(id);
   }
 }

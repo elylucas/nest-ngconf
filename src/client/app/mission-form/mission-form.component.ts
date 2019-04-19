@@ -7,7 +7,7 @@ import { MissionsService } from '../services/missions.service';
 @Component({
   selector: 'app-mission-form',
   templateUrl: './mission-form.component.html',
-  styleUrls: ['./mission-form.component.scss'],
+  styleUrls: ['./mission-form.component.scss']
 })
 export class MissionFormComponent implements OnInit {
   mission$: Observable<Mission>;
@@ -20,7 +20,12 @@ export class MissionFormComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-
+    const id = this.navParams.data.id;
+    if (id) {
+      this.mission$ = this.missionsService.getMissionById(id);
+    } else {
+      this.mission$ = of({ active: false } as any);
+    }
   }
 
   close() {
@@ -33,7 +38,5 @@ export class MissionFormComponent implements OnInit {
     console.log(mission);
   }
 
-  async delete(mission: Mission) {
-
-  }
+  async delete(mission: Mission) {}
 }
