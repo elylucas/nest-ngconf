@@ -8,6 +8,7 @@ import { APP_INTERCEPTOR, APP_PIPE, APP_GUARD } from '@nestjs/core';
 import { DataInterceptor } from './util/data.interceptor';
 import { DataPipe } from './util/data.pipe';
 import { AuthGuard } from './util/auth.guard';
+import { UsersService } from './users/users.service';
 
 @Module({
   imports: [],
@@ -31,7 +32,8 @@ import { AuthGuard } from './util/auth.guard';
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
-    }
+    },
+    UsersService
   ]
 })
 export class AppModule {}

@@ -14,21 +14,21 @@ export class MissionsService {
     return this.missionsRepository.get(id);
   }
 
-createMission(mission: MissionEntity) {
-  return this.missionsRepository.create(mission);
-}
-
-async updateMission(id: number, mission: MissionEntity) {
-  const current = await this.getMission(id);
-  if (!current) {
-    return null;
+  createMission(mission: MissionEntity) {
+    return this.missionsRepository.create(mission);
   }
-  mission.createdAt = current.createdAt;
-  mission.createdBy = current.createdBy;
-  return this.missionsRepository.update(id, mission);
-}
 
-deleteMission(id: number) {
-  return this.missionsRepository.delete(id);
-}
+  async updateMission(id: number, mission: MissionEntity) {
+    const current = await this.getMission(id);
+    if (!current) {
+      return null;
+    }
+    mission.createdAt = current.createdAt;
+    mission.createdBy = current.createdBy;
+    return this.missionsRepository.update(id, mission);
+  }
+
+  deleteMission(id: number) {
+    return this.missionsRepository.delete(id);
+  }
 }
