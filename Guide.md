@@ -813,53 +813,51 @@ async deleteMission(...) { ... }
 
 Open the **server** `AuthGuard` file, and replace the class's `canActivate` method with the following:
 
-<!-- grr-nest-auth-guard-canactivate -->
+<!-- gsr-nest-auth-guard-canactivate -->
 
 `src/server/app/util/auth.guard.ts`
 
 ```typescript
 canActivate(context: ExecutionContext): boolean {
+  const request = context.switchToHttp().getRequest();
+  let token: string;
+  let user: User;
+
+  if (
+    request.headers.authorization &&
+    request.headers.authorization.startsWith('Bearer ')
+  ) {
+    token = request.headers.authorization.split(' ')[1];
+    user = this.userService.getUser(token.replace('-token', ''));
+    if (!user) {
+      return false;
+    }
+    request.user = user;
+  }
+
   const requiredRoles =
     this.reflector.get<string[]>('roles', context.getHandler()) || [];
 
   if (requiredRoles.length === 0) {
     return true;
-  }
-
-  const request = context.switchToHttp().getRequest();
-
-  if (
-    !request.headers.authorization ||
-    !request.headers.authorization.startsWith('Bearer ')
-  ) {
+  } else if (!user) {
     return false;
   }
 
-  const token = request.headers.authorization.split(' ')[1];
-
-  const userRoles = [];
-
-  if (token === 'user-token') {
-    userRoles.push('user');
-  }
-  if (token === 'admin-token') {
-    userRoles.push('user', 'admin');
-  }
-
-  const hasRole = userRoles.some(role => requiredRoles.indexOf(role) > -1);
+  const hasRole = user.roles.some(role => requiredRoles.indexOf(role) > -1);
   return hasRole;
 }
 ```
 
 Let's break the above code down. 
 
-First, we check to see if the method being called has the `@Roles` decorator applied to it and get back a list of the strings specified in the decorator. If the method doesn't have the decorator, it returns undefined, so we make sure to set `requiredRoles` to an empty array in that case. If requiredRoles is empty, authentication is not required for this call, so we return true.
+First, we check to see if there is an Authorization header, and if there is, we pull the token out of the header and then retrieve the user from the provided users service. If a user is not found, the request is rejected.
 
-Next, we get a reference to the HTTP request and check to make sure the authorization header is present and valid (by making sure it begins with `Bearer `).
+Next, we try to pull the list of roles applied to the request handler by checking for a decorator names "roles", and put those roles into the `requiredRoles` variable. If the method doesn't have the decorator, it returns undefined, so we make sure to set `requiredRoles` to an empty array in that case. If we do have a user, we attach it to the request object so we can access it at a later point in the HTTP request (which we will do in the next section).
 
-We declare a `usersRoles` array that contains the roles the user belongs to. In our contrived example, if the token is a user token, we add 'user' to the array, and if the token is an admin token, we add `user` and `admin` to the array. In a real-world app, you would need to verify the token is valid and probably populate the roles based on some other backend call.
+If requiredRoles is empty, authentication is not required for this call, so we return true.
 
-Last, we make sure the authenticated request contains a role that the API call requires.
+Last, we make sure the user has a role that the API call requires.
 
 This guard is already registered with the **server's** `AppModule` providers, but here is how it's done for your reference:
 
@@ -874,7 +872,7 @@ If you try to use the app now, you see that you can view the list of missions an
 
 The menu button in the top left lets you "login" as a user or admin, and it keeps track of your choice in local storage. However, we don't currently send the Bearer token in the HTTP request. We will do that next.
 
-### Create Angular HTTP Interceptor
+### Angular HTTP Interceptor
 
 In Angular, HTTP Interceptors adds a piece of middleware that will let you modify the outgoing request. Interceptors are a perfect place to add the authorization header if our user is authenticated.
 
@@ -917,8 +915,54 @@ The interceptor is already registered in our Angular apps main app module provid
 }
 ```
 
-
 With the authentication in place, depending on if you log in as a user or admin, you can continue adding, editing, and deleting missions.
+
+### Accessing the Authenticated User in the Nest 
+
+Now that we have authentication in place, how do we access the authenticated user? 
+
+In the `AuthGuard`, we attached the user to the request object. Nest does provide a way to get the request object in controllers by using the `Request()` decorator. We could use this method in our POST handler to get the user and set the correct `createdBy`  property for the new mission:
+
+```typescript
+@Roles('user')
+@Post()
+async createMission(@Body() mission: MissionEntity, @Request() req: any) {
+  const user: User = req.user;
+  mission.createdBy = user.id;
+  return this.missionsService.createMission(mission);
+}
+```
+
+And while this works, it is not very clean introduces the possibility of having to repeat this code everywhere we want to get the user.
+
+Nest comes to the rescue again by providing the ability to make custom param decorators that have access to the request.
+
+Open the `GetUser` decorator and update the exported function with the following:
+
+<!-- gsr-nest-getuser-decorator-getuser -->
+
+`src/server/app/util/getuser.decorator.ts`
+
+```typescript
+export const GetUser = createParamDecorator((data, req) => {
+  return req.user;
+});
+```
+
+The `createParamDecorator` helper method provided by Nest takes care of all the hard work and gives you direct access to the request object. Here, we simply return the user from the request.
+
+Now, we can update the createMission method to use the new `GetUser` decorator:
+
+```typescript
+@Roles('user')
+@Post()
+async createMission(@Body() mission: MissionEntity, @GetUser() user: User) {
+  mission.createdBy = user.id;
+  return this.missionsService.createMission(mission);
+}
+```
+
+The `GetUser` decorator will automatically populate the user param, helps clean up the code and gives a reusable way to retrieve users in other handlers.
 
 ## Conclusion
 
