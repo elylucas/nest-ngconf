@@ -17,6 +17,7 @@ import { UsersService } from './users/users.service';
     AppService,
     MissionsRepository,
     MissionsService,
+    UsersService,
     {
       provide: APP_INTERCEPTOR,
       useClass: DataInterceptor

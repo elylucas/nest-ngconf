@@ -1,8 +1,17 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Request
+} from '@nestjs/common';
 import { MissionEntity } from '../data/mission.entity';
+import { User } from '../models/user.model';
 import { Roles } from '../util/roles.decorator';
 import { MissionsService } from './missions.service';
-import { User } from '../models/user.model';
 import { GetUser } from '../util/getuser.decorator';
 
 @Controller('missions')
@@ -19,12 +28,12 @@ export class MissionsController {
     return this.missionsService.getMission(id);
   }
 
-@Roles('user')
-@Post()
-async createMission(@Body() mission: MissionEntity, @GetUser() user: User) {
-  mission.createdBy = user.id;
-  return this.missionsService.createMission(mission);
-}
+  @Roles('user')
+  @Post()
+  async createMission(@Body() mission: MissionEntity, @GetUser() user: User) {
+    mission.createdBy = user.id;
+    return this.missionsService.createMission(mission);
+  }
 
   @Roles('user')
   @Put(':id')

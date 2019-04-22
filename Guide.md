@@ -207,7 +207,7 @@ The `MissionEntity` database model implements this interface already to help mak
 
 > Take note that we have multiple files with the same name in this solution (one in the client and one in the server), so make sure you are in the right file! 
 
-Next, update the Angular service to retrieve the Missions from the API. Add the `getMissions` method:
+Next, update the **client** `MissionsService` to retrieve the Missions from the API. Add the `getMissions` method:
 
 <!-- gsr-ng-missions-service-getmissions -->
 
@@ -281,7 +281,7 @@ We now have a list of missions displayed. Next, let's add to our API to retrieve
 
 ### Update Nest Service and Controller to get Single Mission
 
-Open up the server `MissionService` and add the following method to fetch a single mission from the repository:
+Open up the **server** `MissionService` and add the following method to fetch a single mission from the repository:
 
 <!-- gsr-nest-missions-service-getmission -->
 
