@@ -10,12 +10,6 @@ To begin, clone the starter app from Github:
 git clone https://github.com/elylucas/nest-ngconf.git
 ```
 
-Install the Nest CLI via npm globall:
-
-```bash
-npm i -g @nestjs/cli
-```
-
 Go into the `nest-ngconf` directory and install dependencies:
 
 ```bash
@@ -23,7 +17,13 @@ cd nest-ngconf
 npm install
 ```
 
-If you are using VSCode, install the extension '[Project Snippets](https://marketplace.visualstudio.com/itemdetails?itemName=rebornix.project-snippets)' if you would like to use the included snippets. If not, you can copy or type in the code straight from this guide.
+To start the dev server for both Ionic and Nest, run:
+
+```bash
+npm run dev
+```
+
+Any changes you make to your project will automatically be recompiled when you save.
 
 That's all!
 
@@ -47,68 +47,48 @@ We will use Ionic in this workshop as our UI library. However, no previous exper
 
 ### Create Missions Nest Service
 
-Run the following command in your terminal to create the missions service:
+Nest services are much like Angular services. They are simple classes that can be registered in the app module's providers, which lets them be injected into other components. Services are the ideal place for interacting with the database layer, performing business logic, or making calls into other APIs.
 
-```bash
-nest g service missions
+Open the `MissionService` file and add the `getMissions` method:
+
+<!-- gsr-nest-missions-service-getMissions -->
+
+`src/server/app/missions/missions.service.ts`
+
+```typescript
+getMissions() {
+  return this.missionsRepository.getList();
+}
 ```
-
-This creates a Nest service file at `src/server/app/missions/missions.service.ts`.
-
-> When you create a service through the Nest CLI, it automatically adds it to the list of providers in the main `app.module.ts` module, so you won't need to do it yourself.
 
 In this service class, we make use of the `MissionsRepository`, which is already provided as a part of the base solution. The purpose of this class is to provide a "fake" database for us to use, so we don't have to go through setting one up. The specifics of this class are outside the scope of this workshop.
 
-Update the `MissionsService` class to inject `MissionsRepository` and get back a list of Missions:
-
-**snippet: gsr-nest-missions-service**
-
-```typescript
-export class MissionsService {
-  constructor(private missionsRepository: MissionsRepository) {}
-
-  getMissions() {
-    return this.missionsRepository.getList();
-  }
-}
-```
-
-> Import MissionsRepository from '../data/missions.repository'.
-
 ### Create Missions Nest Controller
 
-Run the following command in your terminal to create the missions controller:
+Open up the `MissionControler` and note that it is has `@Controller('missions')` as a decorator on the class. This decorator instructs Nest that this class is responsible for requests at the /missions` endpoint.
 
-```bash
-nest g controller missions
-```
+Next, add the GET handler in the `MissionController` class:
 
-This command creates a Nest controller file at `src/server/app/missions/missions.service.ts`.
+<!-- gsr-nest-missions-controller-getMissions -->
 
-> Just like the service above, the CLI automatically adds controllers to the app module's list of controllers on your behalf.
-
-The controller imports the `MissionsService` and provide a method that responds to a `GET` request to return the list of missions. Update the controller:
-
-***snippet: gsr-nest-missions-controller***
+`src/server/app/missions/missions.controller.ts`
 
 ```typescript
-export class MissionsController {
-  constructor(private missionsService: MissionsService) {}
-  
-  @Get()
-  async getMissions() {
-    return this.missionsService.getMissions();
-  }
+@Get()
+async getMissions() {
+  return this.missionsService.getMissions();
 }
 ```
 
-> Import the `@Get` decorator from '@nestjs/common'.
+The `@Get` decorator on the `getMissions` method states that this is the method that will response to GET requests.
 
-Open your browser to [http://localhost:3000](http://localhost:3000), and you should see a list of missions returned.
+Open your browser to [http://localhost:3000/missions](http://localhost:3000/missions), and you should see a list of missions returned.
 
 Notice, however, there is some meta-data on the model (the createdAt and createdBy fields), and we might not want this data returned to the client. The `MissionsRepository` is returning a type of `MissionEntity` (located at `src/server/app/data/mission.entity.ts`) from the get methods. We can use the `class-transformer` library to "exclude" certain members of the class from being returned. 
 
-Open up the MissionEntity class, and add `@Exclude()` decorator to the `createdAt` and `createdBy` members like so:
+Open up the `MissionEntity` class, and add `@Exclude()` decorator to the `createdAt` and `createdBy` members like so:
+
+`src/server/app/data/mission.entity.ts`
 
 ```typescript
 export class MissionEntity {
@@ -122,8 +102,6 @@ export class MissionEntity {
   createdBy: string;
 }
 ```
-
-> Import `Exclude` from the `class-transformer` library
 
 For the properties to be excluded, we must run them through the `classToPlain` function from the `class-transformer` library. We could do this in the controller like so:
 
@@ -144,27 +122,23 @@ Fortunately, Nest provides a mechanism for manipulating data on the way out call
 
 Nest interceptors are pretty much what they sound like; they intercept data from the controllers and let you inspect and modify that data.
 
-Create an interceptor from the CLI with the following command:
+We will use an interceptor to run the `classToPlain` method after the controller has processed the request.
 
-```bash
-nest g interceptor util/data
-```
+Update the `intercept` method in `DataInterceptor` to the following:
 
-This command creates an interceptor file at `src/server/app/util/data.interceptor.ts`. Update the class in the file to the following:
+<!-- gsr-nest-data-interceptor-intercept -->
 
-**snippet: gsr-nest-data-interceptor**
+`src/server/app/util/data.interceptor.ts`
 
 ```typescript
-export class DataInterceptor implements NestInterceptor {
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    return next.handle().pipe(
-      map(data => {
-        return {
-          data: classToPlain(data)
-        };
-      })
-    );
-  }
+intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+  return next.handle().pipe(
+    map(data => {
+      return {
+        data: classToPlain(data)
+      };
+    })
+  );
 }
 ```
 
@@ -192,11 +166,9 @@ async getMissions() { ... }
 
 A third option allows us to apply the interceptor to run globally by specifying it in the app module:
 
-```typescript
-import { Module } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core';
-import { DataInterceptor } from './util/data.interceptor';
+`src/server/app/app.module.ts`
 
+```typescript
 @Module({
   providers: [
     {
@@ -208,24 +180,17 @@ import { DataInterceptor } from './util/data.interceptor';
 export class AppModule {}
 ```
 
-> Import `APP_INTERCEPTOR` from '@nestjs/core`.
+This method is already setup in the demo project for the `DataInterceptor` and all the other pieces of Nest middleware we will implement in this workshop, so no need to do this yourself.
 
-This method is used to make sure our interceptor runs everywhere.
-
-Once applied, hit the `/missions` endpoint again and you should see the list of missions minus the `createdAt` and `createdBy` meta-data.
-
-Bonus: Add some additional metadata properties to the data object (request id, timings, etc).
-Bonus: If the data coming back from the controller is undefined, throw a NotFoundException to send a 404 status.
+Hit the `/missions` endpoint again and you should see the list of missions minus the `createdAt` and `createdBy` meta-data.
 
 Now that we have mission data returning from our API let's consume it from our Ionic app.
 
-### Create Mission Interface
+### Mission Interface
 
-First, we want to use a common model between our server and client to represent a Mission. However, we don't want to use the MissionEntity as that has member variables that aren't returned via the API (the `createdAt` and `createdBy` members) and it also has a dependency on the `class-transformer` library, which we don't want to import into our client app if we don't need to. Therefore, we create a lightweight mission interface that can be used from both our front and back ends.
+We want to use a common model between our server and client to represent a Mission. However, we don't want to use the MissionEntity as that has member variables that aren't returned via the API (the `createdAt` and `createdBy` members) and it also has a dependency on the `class-transformer` library, which we don't want to import into our client app if we don't need to. Therefore, we create a lightweight mission interface that can be used from both our front and back ends.
 
-In the `src/shared/models` folder, create a file called `mission.ts` and add the following class to the file:
-
-**snippet: gsr-mission-model**
+There is a `Mission` interface already defined in the shared folder at `src/shared/models/mission.model.ts`:
 
 ```typescript
 export interface Mission {
@@ -236,59 +201,41 @@ export interface Mission {
 }
 ```
 
-### Create Mission Angular Service
+The `MissionEntity` database model implements this interface already to help make sure the main properties for a Mission stay consistent.
 
-Next, create an Angular service to retrieve the Missions from the API. Run the following command from your terminal:
+### Update Mission Angular Service to Retrieve Missions
 
-```bash
-npx ionic g service services/missions
-```
+> Take note that we have multiple files with the same name in this solution (one in the client and one in the server), so make sure you are in the right file! 
 
-> The Ionic CLI invokes the same generator the Angular CLI would, except in special cases where there are Ionic specific modifications to make to the file.
+Next, update the **client** `MissionsService` to retrieve the Missions from the API. Add the `getMissions` method:
 
-This command creates a service at `src/client/app/services/missions.service.ts`. Take note that from here on out we have multiple files with the same name in this project (one on the client and one on the server), so make sure you are in the right file! Update the class in the client file to the following:
+<!-- gsr-ng-missions-service-getmissions -->
 
-**snippet: gsr-ng-missions-service**
+`src/client/app/services/missions.service.ts`
 
 ```typescript
-export class MissionsService {
-  constructor(private httpClient: HttpClient) {}
-
-  getMissions() {
-    return this.httpClient
-      .get<{data: Mission[]}>('http://localhost:3000/missions')
-      .pipe(map(response => response.data));
-  }
+getMissions() {
+  return this.httpClient
+    .get<{ data: Mission[] }>('http://localhost:3000/missions')
+    .pipe(map(response => response.data));
 }
 ```
 
-> import `Mission` from the new model class at '../../../shared/models/mission.model', HttpClient from '@angular/common/http', and `map` from 'rxjs/operators'.
-
-> Since we are using HttpClient, make sure to add HttpClientModule (from `@angular/common/http`) in the app module's list of imports.
 
 ### Update Home Page
 
-Next, modify the `home.page.ts` file to call into the service and save the results to a local observable:
+Next, modify the `home.page.ts` ngOnInit method to call into the service and save the results to a local observable:
 
-**snippet: gsr-ng-homepage-ts**
+<!-- gsr-ng-missions-controller-oninit -->
 
 ```typescript
-export class HomePage implements OnInit {
-  missions: Observable<Mission[]>;
-  
-  constructor(private missionsService: MissionsService) {}
-  
-  ngOnInit() {
-    this.missions = this.missionsService.getMissions();
-  }
+ngOnInit() {
+  this.missions = this.missionsService.getMissions();
 }
 ```
 
-> Import `OnInit` from '@angular/core' and `Observable` from 'rxjs', `Mission` from '../../../shared/models/mission.model',  and `MissionsService` from '../services/missions.service' (be careful to not import the `MissionsService` that belongs to the Nest project.
+The `home.page.html` template is already setup to display the data. Feel free to browse through it:
 
-Next, replace the `home.page.html` template with the following:
-
-**snippet: gsr-ng-homepage-template**
 
 ```html
 <ion-header>
@@ -318,7 +265,9 @@ Next, replace the `home.page.html` template with the following:
 
 If you don't already have a browser window opened to http://localhost:8100, go ahead and do so. You should now see the list of missions.
 
-### Lab 1 Exercise 
+That is a great start! Next, we will look into display a mission in its own form.
+
+### Lab 1 Bonus Exercise 
 
 Update the `DataInterceptor` class to return the time that it took to process the request. Before the call to `next.handle()`, get the start time, and during the `map`, get the end time. Use the difference between these variables to represent the number of milliseconds the time of the request took, and return it with the response.
 
@@ -332,9 +281,11 @@ We now have a list of missions displayed. Next, let's add to our API to retrieve
 
 ### Update Nest Service and Controller to get Single Mission
 
-Open up the mission service in the Nest project and add the following method to fetch a single mission from the repository:
+Open up the **server** `MissionService` and add the following method to fetch a single mission from the repository:
 
-***snippet: gsr-nest-missions-service-get***
+<!-- gsr-nest-missions-service-getmission -->
+
+`src/server/app/missions/missions.service.ts`
 
 ```typescript
 getMission(id: number) {
@@ -344,7 +295,7 @@ getMission(id: number) {
 
 Update the Nest mission controller to call into this new service method:
 
-***snippet: gsr-nest-missions-controller-get***
+`src/server/app/missions/missions.controller.ts`
 
 ```typescript
 @Get(':id')
@@ -353,11 +304,9 @@ async getMission(@Param('id') id: number) {
 }
 ```
 
-> Import `Param` from '@nestjs/common'.
-
 The `Get()` decorator here takes in a route parameter named `id`, and in the `getMission` method, we extract that parameter out using the new `@Param` decorator, which in turn assigns the value to `id`.
     
-If you request http://localhost:3000/missions/1, you should notice that nothing comes back. Why? Parameters are passed in as strings, but we expect the `id` to be a number, and the repo does not find a mission because of it. In the params to `getMission`, `id` is of type number, but, unfortunately, TypeScript does coerce values to be their proper types.
+If you request http://localhost:3000/missions/1, you should notice that nothing comes back. Why? Parameters are passed in as strings, but we expect the `id` to be a number, and the repo does not find the mission because of it. In the params to `getMission`, `id` is of type number, but, unfortunately, we are pretty much lying to TypeScript that the value is coming in as a number.
 
 We could parse the string value of `id` into a number manually inside the controller method before calling into the service, but once again this muddies our controller code with duplicated logic throughout. It would be nice to have a facility to do this for us automatically. 
 
@@ -367,27 +316,19 @@ Nest comes to the rescue here!
 
 Fortunately, we can use another facet of Nest, called Pipes, to manipulate data that comes in from the outside before it reaches our controller. Because we are using TypeScript, Pipes know all the little details about your controller methods, including all the parameters, and the types those parameters are supposed to be. We can take advantage of this information and use `class-transformer` again to convert a plain object into something of a specific type. Let's see how to do that.
 
-Create a data pipe via the CLI:
+Open up the `DataPipe` class and update the `transform` method to: 
 
-```bash
-nest g pipe util/data
-```
+<!-- gsr-nest-data-pipe-transform -->
 
-This command creates a pipe file at `src/server/app/util/data.pipe.ts`. Update the class in the file to:
-
-***snippet: gsr-nest-data-pipe***
+`src/server/app/util/data.pipe.ts`
 
 ```typescript
-export class DataPipe implements PipeTransform {
-  transform(value: any, metadata: ArgumentMetadata) {
-    const { metatype } = metadata;
-    const convertedValue = plainToClass(metatype, value);
-    return convertedValue;
-  }
+transform(value: any, metadata: ArgumentMetadata) {
+  const { metatype } = metadata;
+  const convertedValue = plainToClass(metatype, value);
+  return convertedValue;
 }
 ```
-
-> Import `planToClass` from `class-transformer`.
 
 The Pipe itself is simple. It implements the `PipeTransform` interface, and has one method, `transform`, which is called for each parameter a route handler takes in. 
 
@@ -395,16 +336,7 @@ The `transform` method takes two arguments: the first being the value being pass
 
 Next, we call `plainToClass`, which converts a value into a particular type, then return the converted value, which becomes the new value for the parameter.
 
-Pipes are bound in all the same ways we saw Interceptors bound earlier. Once again we elect to bind the pipe at the app level, so it is used in every request. Add the following to the list of imports in the server `app.module.ts` file:
-
-```typescript
-{
-  provide: APP_PIPE,
-  useClass: DataPipe
-}
-```
-
-> Import `APP_PIPE` from '@nestjs/core' and `DataPipe` from './util/data.pipe'.
+Pipes are bound in all the same ways we saw Interceptors bound earlier. Once again we elect to bind the pipe at the app level, and this is already taken care of in the starter app.
 
 Now, make a call to http://localhost:3000/missions/1, and you should see a single mission come back.
 
@@ -414,7 +346,9 @@ We can now pull back a specific mission from our API, so let's update the missio
 
 Add the following method to the `missions.service.ts` service:
 
-***snippet: gsr-ng-missions-service-getbyid***
+<!-- gsr-ng-missions-service-getmissionbyid -->
+
+`src/client/app/services/missions.service.ts`
 
 ```typescript
 getMissionById(id: number) {
@@ -424,65 +358,30 @@ getMissionById(id: number) {
 }
 ```
 
-### Create Mission Form
+### Mission Form
 
-Create a new component with the following command:
+The mission form will display in a modal when the user clicks a mission from the list. From here, a user can view the mission, edit, and update it. The mission form is already created as a part of the base solution, so let's update the `MissionFormComponent` to pull the selected one back from the service and display it.
 
-```bash
-npx ionic g component MissionForm
-```
+Update the `MissionFormComponent` to use the following `ngOnInit`:
 
-The MissionForm needs to be registered with the home module. Open up `home.module.ts` and add MissionFormComponent to the NgModel's `entryComponents` and `declarations` arrays like so:
+<!-- gsr-ng-missionform-component-ngoninit -->
 
-```typescript
-@NgModule({
-  /* .... */
-  entryComponents: [MissionFormComponent],
-  declarations: [HomePage, MissionFormComponent]
-})
-export class HomePageModule {}
-```
-
-Update `mission-form.component.ts` with the following:
-
-***snippet: gsr-ng-missionform-ts***
+`src/client/app/mission-form/mission-form.component.ts`
 
 ```typescript
-export class MissionFormComponent implements OnInit {
-  mission$: Observable<Mission>;
-
-  constructor(
-    private navParams: NavParams,
-    private missionsService: MissionsService,
-    private modalCtrl: ModalController
-  ) {}
-
-  ngOnInit() {
-    const id = this.navParams.data.id;
-    if (id) {
-      this.mission$ = this.missionsService.getMissionById(id);
-    } else {
-      this.mission$ = of({ active: false } as any);
-    }
-  }
-
-  close() {
-    this.modalCtrl.dismiss({
-      refreshMissions: false
-    });
-  }
-
-  submit(mission: Mission) {
-    console.log(mission);
+ngOnInit() {
+  const id = this.navParams.data.id;
+  if (id) {
+    this.mission$ = this.missionsService.getMissionById(id);
+  } else {
+    this.mission$ = of({ active: false } as any);
   }
 }
 ```
 
-> Import `NavParams` and `ModalController` from '@ionic/angular', and `of` from 'rxjs`.
+The mission form template is a simple Ionic page displays a the details of the mission in a form with a few text inputs and a switch button. The template is already filled out in the starter app, but here it is for your reference:
 
-And then update the `mission-form.component.html` template to:
-
-***snippet: gsr-ng-missionform-template***
+`src/client/app/mission-form/mission-form.component.html`
 
 ```html
 <ion-header>
@@ -529,15 +428,17 @@ And then update the `mission-form.component.html` template to:
 
 We open an Ionic modal and display the `MissionForm` when a user clicks on one of the missions in the list. 
 
-Update the `home.page.ts` file to inject `private modalController: ModalController` into the constructor and then add the `openMission` method:
+Update the `HomePage`file to add the `openMission` method:
 
-***snippet: gsr-ng-homepage-openMission***
+<!-- gsr-ng-home-page-openmission -->
+
+`src/client/app/home/home.page.ts`
 
 ```typescript
-async openMission(id: number) {
+async openMission(mission: Mission) {
   const modal = await this.modalController.create({
     component: MissionFormComponent,
-    componentProps: { id }
+    componentProps: { id: mission.id }
   });
   await modal.present();
   const { data = {} } = await modal.onDidDismiss();
@@ -547,7 +448,7 @@ async openMission(id: number) {
 }
 ```
 
-Add a click handler to the `<ion-item>` in `home.page.html`:
+The `<ion-item>` in the home page template has a click handler to call the above method:
 
 ```html
 <ion-item *ngFor="let mission of (missions | async)" (click)="openMission(mission.id)">
@@ -555,7 +456,7 @@ Add a click handler to the `<ion-item>` in `home.page.html`:
 
 We will leave the form submission for the next lab.
 
-### Lab 2 Exercise
+### Lab 2 Bonus Exercise
 
 Currently, if we supply an id to the `missions/:id` endpoint that doesn't exist, the API returns a null object. We should return a 404 Not Found status code instead.
 
@@ -569,9 +470,11 @@ Check the lab2-complete branch for the complete lab2 code and the solution to th
 
 ### Update Nest Missions Service to add Create, Update, and Delete Methods
 
-Add the create, update, and delete methods to the Nest `missions.service.ts` class:
+Add the create, update, and delete methods to the **server** `MissionService` class:
 
-***snippet: gsr-nest-missions-service-createupdatedelete***
+<!-- gsr-nest-missions-service-createupdatedelete -->
+
+`src/server/app/missions/missions.service.ts`
 
 ```typescript
 createMission(mission: MissionEntity) {
@@ -593,13 +496,15 @@ deleteMission(id: number) {
 }
 ```
 
-> Import `MissionEntity` from '../data/mission.entity'.
-
 The `createMission` and `deleteMission` methods are straightforward, just passing through to the mission repository. The `updateMission` method, however, is making sure we preserve the original `createdAt` and `createdBy` values that were originally on the mission. This code is an example of the type of logic that could go into a service class.
 
 ### Update Nest Missions Controller to add Post and PUT Methods
 
-***snippet: gsr-nest-missions-controller-createupdatedelete***
+Add the following methods to the `MissionsController`:
+
+<!--- gsr-nest-missions-controller-createupdatedelete --->
+
+`src/server/app/missions/missions.controller.ts`
 
 ```typescript
 @Post()
@@ -618,8 +523,6 @@ async deleteMission(@Param('id') id: number) {
 }
 ```
 
-> Import `Post`, `Put`, `Delete`, and `Body` from '@nestjs/common'.
-
 These new methods each use a new decorator (`@Post`, `@Put`, and `@Delete`) to let Nest know which HTTP method each route handler should respond to.
 
 In the params to both the create and update methods, we use the `@Body` decorator to indicate we want to populate the `mission` object from the request body. We don't need to set up anything additional (like add a body parser), as Nest takes care of this for us.
@@ -630,9 +533,11 @@ Now that our API supports the remaining create, update, and delete methods, let'
 
 ### Update Angular Missions Service for Create, Update, and Delete methods
 
-Update the Angular `missions.service.ts` file with the remaining methods:
+Update the **client** `MissionsService` class with the remaining methods:
 
-***snippet: gsr-ng-missions-service-createupdatedelete***
+<!-- gsr-ng-missions-service-createupdatedelete -->
+
+`gsr-ng-missions-service-createupdatedelete`
 
 ```typescript
 createMission(mission: Mission) {
@@ -660,9 +565,11 @@ With the service methods taken care of, let's look at updating the mission form 
 
 ### Updating Mission Form to Support Create and Edit
 
-Next, go update the `submit` method in `mission-page.component.ts` with the following:
+When the user submits the form on the mission form screen, its setup to call the `submit` method in `MissionFormComponent`. Update that class with the following `sumbit` method:
 
-***snippet: gsr-ng-missionform-submit-method***
+<!-- gsr-ng-mission-form-component-submit -->
+
+`src/client/app/mission-form/mission-form.component.ts`
 
 ```typescript
 async submit(mission: Mission) {
@@ -687,19 +594,21 @@ async submit(mission: Mission) {
 }
 ```
 
-> Add `private alertController: AlertController` to the constructor params and import `AlertController` from '@ionic/angular'.
-
 First, we take a look to see if this is a new mission or an existing one by checking to see if the mission has an id, then we call the appropriate service method based on this check. Next, we subscribe to the call so we can dismiss the modal when it is complete. We also save a reference to the subscription so we can make sure to unsubscribe from it when the call is done, which helps prevent any potential memory leaks.
 
-The last thing we need to do is hook up the add a button to open up the mission form modal. In `home.page.html` add the click handler `(click)="newMission()"` to the add button in the `<ion-header>`:
+### Showing New Mission Modal
 
-```html
+The last thing we need to do is hook up the add a button to open up the mission form modal. In `home.page.html`, there is a button in the Ionic header to create new missions, and it is set up to call `newMission()` when clicked like so:
+
+```
 <ion-button (click)="newMission()"><ion-icon name="add"></ion-icon></ion-button>
 ```
 
-Then add the `newMission` method to the class in `home.page.ts`:
+Then update the `newMission` method to the class in `home.page.ts`:
 
-***snippet: gsr-ng-homepage-newmission***
+<!-- gsr-ng-home-page-newmission -->
+
+`src/client/app/home/home.page.ts`
 
 ```typescript
 async newMission() {
@@ -718,15 +627,17 @@ async newMission() {
 
 When the `MissionForm` modal loads an existing mission, a row displays above the form showing the mission's ID and a delete icon. Next, we enable the delete icon to allow a user to delete missions.
 
-Add a click handler to the "trash" icon in `mission-form.component.html`:
+There is a click handler to the "trash" icon in `mission-form.component.html`:
 
 ```html
 <ion-icon name="trash" (click)="delete(mission)" color="danger" slot="end"></ion-icon>
 ```
 
-In `mission-form.component.ts`, add the delete method:
+In `MissionFormComponent`, update the delete method:
 
-***snippet: gsr-ng-missionform-delete***
+<!-- gsr-ng-mission-form-component-delete -->
+
+`src/client/app/mission-form/mission-form.component.ts`
 
 ```typescript
 async delete(mission: Mission) {
@@ -902,53 +813,51 @@ async deleteMission(...) { ... }
 
 Open the **server** `AuthGuard` file, and replace the class's `canActivate` method with the following:
 
-<!-- grr-nest-auth-guard-canactivate -->
+<!-- gsr-nest-auth-guard-canactivate -->
 
 `src/server/app/util/auth.guard.ts`
 
 ```typescript
 canActivate(context: ExecutionContext): boolean {
+  const request = context.switchToHttp().getRequest();
+  let token: string;
+  let user: User;
+
+  if (
+    request.headers.authorization &&
+    request.headers.authorization.startsWith('Bearer ')
+  ) {
+    token = request.headers.authorization.split(' ')[1];
+    user = this.userService.getUser(token.replace('-token', ''));
+    if (!user) {
+      return false;
+    }
+    request.user = user;
+  }
+
   const requiredRoles =
     this.reflector.get<string[]>('roles', context.getHandler()) || [];
 
   if (requiredRoles.length === 0) {
     return true;
-  }
-
-  const request = context.switchToHttp().getRequest();
-
-  if (
-    !request.headers.authorization ||
-    !request.headers.authorization.startsWith('Bearer ')
-  ) {
+  } else if (!user) {
     return false;
   }
 
-  const token = request.headers.authorization.split(' ')[1];
-
-  const userRoles = [];
-
-  if (token === 'user-token') {
-    userRoles.push('user');
-  }
-  if (token === 'admin-token') {
-    userRoles.push('user', 'admin');
-  }
-
-  const hasRole = userRoles.some(role => requiredRoles.indexOf(role) > -1);
+  const hasRole = user.roles.some(role => requiredRoles.indexOf(role) > -1);
   return hasRole;
 }
 ```
 
 Let's break the above code down. 
 
-First, we check to see if the method being called has the `@Roles` decorator applied to it and get back a list of the strings specified in the decorator. If the method doesn't have the decorator, it returns undefined, so we make sure to set `requiredRoles` to an empty array in that case. If requiredRoles is empty, authentication is not required for this call, so we return true.
+First, we check to see if there is an Authorization header, and if there is, we pull the token out of the header and then retrieve the user from the provided users service. If a user is not found, the request is rejected.
 
-Next, we get a reference to the HTTP request and check to make sure the authorization header is present and valid (by making sure it begins with `Bearer `).
+Next, we try to pull the list of roles applied to the request handler by checking for a decorator names "roles", and put those roles into the `requiredRoles` variable. If the method doesn't have the decorator, it returns undefined, so we make sure to set `requiredRoles` to an empty array in that case. If we do have a user, we attach it to the request object so we can access it at a later point in the HTTP request (which we will do in the next section).
 
-We declare a `usersRoles` array that contains the roles the user belongs to. In our contrived example, if the token is a user token, we add 'user' to the array, and if the token is an admin token, we add `user` and `admin` to the array. In a real-world app, you would need to verify the token is valid and probably populate the roles based on some other backend call.
+If requiredRoles is empty, authentication is not required for this call, so we return true.
 
-Last, we make sure the authenticated request contains a role that the API call requires.
+Last, we make sure the user has a role that the API call requires.
 
 This guard is already registered with the **server's** `AppModule` providers, but here is how it's done for your reference:
 
@@ -963,7 +872,7 @@ If you try to use the app now, you see that you can view the list of missions an
 
 The menu button in the top left lets you "login" as a user or admin, and it keeps track of your choice in local storage. However, we don't currently send the Bearer token in the HTTP request. We will do that next.
 
-### Create Angular HTTP Interceptor
+### Angular HTTP Interceptor
 
 In Angular, HTTP Interceptors adds a piece of middleware that will let you modify the outgoing request. Interceptors are a perfect place to add the authorization header if our user is authenticated.
 
@@ -1006,8 +915,54 @@ The interceptor is already registered in our Angular apps main app module provid
 }
 ```
 
-
 With the authentication in place, depending on if you log in as a user or admin, you can continue adding, editing, and deleting missions.
+
+### Accessing the Authenticated User in the Nest 
+
+Now that we have authentication in place, how do we access the authenticated user? 
+
+In the `AuthGuard`, we attached the user to the request object. Nest does provide a way to get the request object in controllers by using the `Request()` decorator. We could use this method in our POST handler to get the user and set the correct `createdBy`  property for the new mission:
+
+```typescript
+@Roles('user')
+@Post()
+async createMission(@Body() mission: MissionEntity, @Request() req: any) {
+  const user: User = req.user;
+  mission.createdBy = user.id;
+  return this.missionsService.createMission(mission);
+}
+```
+
+And while this works, it is not very clean introduces the possibility of having to repeat this code everywhere we want to get the user.
+
+Nest comes to the rescue again by providing the ability to make custom param decorators that have access to the request.
+
+Open the `GetUser` decorator and update the exported function with the following:
+
+<!-- gsr-nest-getuser-decorator-getuser -->
+
+`src/server/app/util/getuser.decorator.ts`
+
+```typescript
+export const GetUser = createParamDecorator((data, req) => {
+  return req.user;
+});
+```
+
+The `createParamDecorator` helper method provided by Nest takes care of all the hard work and gives you direct access to the request object. Here, we simply return the user from the request.
+
+Now, we can update the createMission method to use the new `GetUser` decorator:
+
+```typescript
+@Roles('user')
+@Post()
+async createMission(@Body() mission: MissionEntity, @GetUser() user: User) {
+  mission.createdBy = user.id;
+  return this.missionsService.createMission(mission);
+}
+```
+
+The `GetUser` decorator will automatically populate the user param, helps clean up the code and gives a reusable way to retrieve users in other handlers.
 
 ## Conclusion
 
