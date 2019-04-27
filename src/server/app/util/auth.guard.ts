@@ -6,10 +6,7 @@ import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(
-    private reflector: Reflector,
-    private userService: UsersService
-  ) {}
+  constructor(private reflector: Reflector, private userService: UsersService) {}
 
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
