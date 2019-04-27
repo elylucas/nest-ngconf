@@ -75,6 +75,9 @@
 		"body": [
 			"transform(value: any, metadata: ArgumentMetadata) {",
 			"  const { metatype } = metadata;",
+			"  if (!metatype) {",
+			"    return value;",
+			"  }",
 			"  const convertedValue = plainToClass(metatype, value);",
 			"  return convertedValue;",
 			"}"
