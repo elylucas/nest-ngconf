@@ -11,7 +11,7 @@
     <script src="assets/js/copyToClipboard.js"></script>
     <script src="assets/js/createButtons.js"></script>
     <script>
-      hljs.initHighlightingOnLoad();
+      // hljs.initHighlightingOnLoad();
     </script>
   </head>
   <body>
@@ -32,10 +32,13 @@
 <h2 id="prerequisites"><a class="header-link" href="#prerequisites"></a>Prerequisites</h2>
 <p>You need a recent version of Node installed (this is tested with Node 10 but might work with Node 8). Visit <a href="https://nodejs.org/en/">Node&#39;s website</a> to install it.</p>
 <p>To begin, clone the starter app from Github:</p>
-<pre class="hljs"><code>git <span class="hljs-built_in">clone</span> https://github.com/elylucas/nest-ngconf.git</code></pre><p>Go into the <code>nest-ngconf</code> directory and install dependencies:</p>
+<pre class="hljs"><code>git <span class="hljs-built_in">clone</span> https://github.com/elylucas/nest-ngconf.git</code></pre><p><copy-button></copy-button></p>
+<p>Go into the <code>nest-ngconf</code> directory and install dependencies:</p>
 <pre class="hljs"><code><span class="hljs-built_in">cd</span> nest-ngconf
-npm install</code></pre><p>To start the dev server for both Ionic and Nest, run:</p>
-<pre class="hljs"><code>npm run dev</code></pre><p>Any changes you make to your project will automatically be recompiled when you save.</p>
+npm install</code></pre><p><copy-button></copy-button></p>
+<p>To start the dev server for both Ionic and Nest, run:</p>
+<pre class="hljs"><code>npm run dev</code></pre><p><copy-button></copy-button></p>
+<p>Any changes you make to your project will automatically be recompiled when you save.</p>
 <p>That&#39;s all!</p>
 <h2 id="introduction"><a class="header-link" href="#introduction"></a>Introduction</h2>
 <p>In this workshop, we will cover how to build out a full-stack TypeScript application using Angular, Ionic, and NestJS. As Angular devs, you already know how powerful TypeScript is. We will take the power of TypeScript and learn how to use it on the backend.</p>
@@ -48,23 +51,25 @@ npm install</code></pre><p>To start the dev server for both Ionic and Nest, run:
 <blockquote>
 <p>Start with the <code>master</code> branch and run <code>npm run dev</code> to start the Nest and Angular dev servers.</p>
 </blockquote>
-<h3 id="create-missions-nest-service"><a class="header-link" href="#create-missions-nest-service"></a>Create Missions Nest Service</h3>
+<h3 id="nest-missions-service"><a class="header-link" href="#nest-missions-service"></a>Nest Missions Service</h3>
 <p>Nest services are much like Angular services. They are simple classes that can be registered in the app module&#39;s providers, which lets them be injected into other components. Services are the ideal place for interacting with the database layer, performing business logic, or making calls into other APIs.</p>
 <p>Open the <code>MissionService</code> file and add the <code>getMissions</code> method:</p>
 <!-- gsr-nest-missions-service-getMissions -->
 <p><code>src/server/app/missions/missions.service.ts</code></p>
 <pre class="hljs"><code>getMissions() {
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.missionsRepository.getList();
-}</code></pre><p>In this service class, we make use of the <code>MissionsRepository</code>, which is already provided as a part of the base solution. The purpose of this class is to provide a &quot;fake&quot; database for us to use, so we don&#39;t have to go through setting one up. The specifics of this class are outside the scope of this workshop.</p>
-<h3 id="create-missions-nest-controller"><a class="header-link" href="#create-missions-nest-controller"></a>Create Missions Nest Controller</h3>
-<p>Open up the <code>MissionControler</code> and note that it is has <code>@Controller(&#39;missions&#39;)</code> as a decorator on the class. This decorator instructs Nest that this class is responsible for requests at the /missions` endpoint.</p>
+}</code></pre><p><copy-button></copy-button></p>
+<p>In this service class, we make use of the <code>MissionsRepository</code>, which is already provided as a part of the base solution. The purpose of this class is to provide a &quot;fake&quot; database for us to use, so we don&#39;t have to go through setting one up. The specifics of this class are outside the scope of this workshop.</p>
+<h3 id="missions-nest-controller"><a class="header-link" href="#missions-nest-controller"></a>Missions Nest Controller</h3>
+<p>Open up the <code>MissionController</code> and note that it is has <code>@Controller(&#39;missions&#39;)</code> as a decorator on the class. This decorator instructs Nest that this class is responsible for requests at the /missions` endpoint.</p>
 <p>Next, add the GET handler in the <code>MissionController</code> class:</p>
 <!-- gsr-nest-missions-controller-getMissions -->
 <p><code>src/server/app/missions/missions.controller.ts</code></p>
 <pre class="hljs"><code><span class="hljs-meta">@Get</span>()
 async getMissions() {
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.missionsService.getMissions();
-}</code></pre><p>The <code>@Get</code> decorator on the <code>getMissions</code> method states that this is the method that will response to GET requests.</p>
+}</code></pre><p><copy-button></copy-button></p>
+<p>The <code>@Get</code> decorator on the <code>getMissions</code> method states that this is the method that will response to GET requests.</p>
 <p>Open your browser to <a href="http://localhost:3000/missions">http://localhost:3000/missions</a>, and you should see a list of missions returned.</p>
 <p>Notice, however, there is some meta-data on the model (the createdAt and createdBy fields), and we might not want this data returned to the client. The <code>MissionsRepository</code> is returning a type of <code>MissionEntity</code> (located at <code>src/server/app/data/mission.entity.ts</code>) from the get methods. We can use the <code>class-transformer</code> library to &quot;exclude&quot; certain members of the class from being returned. </p>
 <p>Open up the <code>MissionEntity</code> class, and add <code>@Exclude()</code> decorator to the <code>createdAt</code> and <code>createdBy</code> members like so:</p>
@@ -78,14 +83,16 @@ async getMissions() {
   createdAt: <span class="hljs-built_in">Date</span>;
   <span class="hljs-meta">@Exclude</span>()
   createdBy: <span class="hljs-built_in">string</span>;
-}</code></pre><p>For the properties to be excluded, we must run them through the <code>classToPlain</code> function from the <code>class-transformer</code> library. We could do this in the controller like so:</p>
+}</code></pre><p><copy-button></copy-button></p>
+<p>For the properties to be excluded, we must run them through the <code>classToPlain</code> function from the <code>class-transformer</code> library. We could do this in the controller like so:</p>
 <pre class="hljs"><code><span class="hljs-meta">@Get</span>()
 async getMissions() {
   <span class="hljs-keyword">const</span> missionEntities = await <span class="hljs-keyword">this</span>.missionsService.getMissions();
   <span class="hljs-keyword">const</span> missions = classToPlain(missionEntities);
   <span class="hljs-keyword">return</span> missions;
 }</code></pre><p>However, this adds some cruft to our controller methods. We would have to repeat this code everywhere we return a mission, and repeating code violates the DRY (don&#39;t repeat yourself) principle.</p>
-<p>Fortunately, Nest provides a mechanism for manipulating data on the way out called interceptors. Let&#39;s take a look at building one next.</p>
+<p>Fortunately, Nest provides a mechanism called interceptors that allow manipulation of data before being returned in the request. 
+Let&#39;s take a look at building one next.</p>
 <h3 id="nest-interceptors"><a class="header-link" href="#nest-interceptors"></a>Nest Interceptors</h3>
 <p>Nest interceptors are pretty much what they sound like; they intercept data from the controllers and let you inspect and modify that data.</p>
 <p>We will use an interceptor to run the <code>classToPlain</code> method after the controller has processed the request.</p>
@@ -100,12 +107,13 @@ async getMissions() {
       };
     })
   );
-}</code></pre><blockquote>
+}</code></pre><p><copy-button></copy-button></p>
+<blockquote>
 <p>Import <code>map</code> from &#39;rxjs/operators&#39; and <code>classToPlain</code> from &#39;class-transformer&#39;</p>
 </blockquote>
 <p>The <code>next.handle()</code> method is an observable stream that you can interact with like any other observable. Here, we use the <code>map</code> operator from RXJS to transform the output from one object to another. Specifically, we are using <code>classToPlain</code> to have <code>class-transformer</code> remove the excluded params from <code>MissionEntity</code>, just like the controller did earlier. </p>
 <p>We are also modifying the returned object to return an object that now has a <code>data</code> property on it, which contains the original response. Optionally, we can now return other properties the could be meta-data about the response, such as a request id or the time it took the request to complete.</p>
-<p>To use the new interceptor, Nest provides a few different options. We can use the <code>@UseInterceptors</code> decorator and either put it on a class if we want it to apply to the entire controller like so:</p>
+<p>To use the <code>DataInterceptor</code>, Nest provides a few different options to bind it to a request. We can use the <code>@UseInterceptors</code> decorator and either put it on a class if we want it to apply to the entire controller like so:</p>
 <pre class="hljs"><code><span class="hljs-meta">@UseInterceptors</span>(DataInterceptor)
 <span class="hljs-meta">@Controller</span>(<span class="hljs-string">'missions'</span>)
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> MissionsController { ... }</code></pre><p>Alternatively, we can be more selective and put it only on the route handlers we want:</p>
@@ -144,12 +152,16 @@ async getMissions() { ... }</code></pre><p>A third option allows us to apply the
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.httpClient
     .get&lt;{ data: Mission[] }&gt;(<span class="hljs-string">'http://localhost:3000/missions'</span>)
     .pipe(map(response =&gt; response.data));
-}</code></pre><h3 id="update-home-page"><a class="header-link" href="#update-home-page"></a>Update Home Page</h3>
+}</code></pre><p><copy-button></copy-button></p>
+<h3 id="update-home-page"><a class="header-link" href="#update-home-page"></a>Update Home Page</h3>
 <p>Next, modify the <code>home.page.ts</code> ngOnInit method to call into the service and save the results to a local observable:</p>
 <!-- gsr-ng-missions-controller-oninit -->
+<p><code>src/client/app/home/home.page.ts</code></p>
 <pre class="hljs"><code>ngOnInit() {
   <span class="hljs-keyword">this</span>.missions = <span class="hljs-keyword">this</span>.missionsService.getMissions();
-}</code></pre><p>The <code>home.page.html</code> template is already setup to display the data. Feel free to browse through it:</p>
+}</code></pre><p><copy-button></copy-button></p>
+<p>The home page template is already setup to display the data. Feel free to browse through it:</p>
+<p><code>src/client/app/home/home.page.html</code></p>
 <pre class="hljs"><code><span class="hljs-tag">&lt;<span class="hljs-name">ion-header</span>&gt;</span>
   <span class="hljs-tag">&lt;<span class="hljs-name">ion-toolbar</span>&gt;</span>
   <span class="hljs-tag">&lt;<span class="hljs-name">ion-buttons</span> <span class="hljs-attr">slot</span>=<span class="hljs-string">"start"</span>&gt;</span>
@@ -188,13 +200,15 @@ async getMissions() { ... }</code></pre><p>A third option allows us to apply the
 <p><code>src/server/app/missions/missions.service.ts</code></p>
 <pre class="hljs"><code>getMission(id: <span class="hljs-built_in">number</span>) {
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.missionsRepository.get(id);
-}</code></pre><p>Update the Nest mission controller to call into this new service method:</p>
+}</code></pre><p><copy-button></copy-button></p>
+<p>Update the <code>MissionController</code> to call into this new service method:</p>
 <p><code>src/server/app/missions/missions.controller.ts</code></p>
 <pre class="hljs"><code><span class="hljs-meta">@Get</span>(<span class="hljs-string">':id'</span>)
 async getMission(<span class="hljs-meta">@Param</span>(<span class="hljs-string">'id'</span>) id: <span class="hljs-built_in">number</span>) {
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.missionsService.getMission(id);
-}</code></pre><p>The <code>Get()</code> decorator here takes in a route parameter named <code>id</code>, and in the <code>getMission</code> method, we extract that parameter out using the new <code>@Param</code> decorator, which in turn assigns the value to <code>id</code>.</p>
-<p>If you request <a href="http://localhost:3000/missions/1">http://localhost:3000/missions/1</a>, you should notice that nothing comes back. Why? Parameters are passed in as strings, but we expect the <code>id</code> to be a number, and the repo does not find the mission because of it. In the params to <code>getMission</code>, <code>id</code> is of type number, but, unfortunately, we are pretty much lying to TypeScript that the value is coming in as a number.</p>
+}</code></pre><p><copy-button></copy-button></p>
+<p>The <code>Get()</code> decorator here takes in a route parameter named <code>id</code>, and in the <code>getMission</code> method, we extract that parameter out using the new <code>@Param</code> decorator, which in turn assigns the value to <code>id</code>.</p>
+<p>If you request <a href="http://localhost:3000/missions/1">http://localhost:3000/missions/1</a>, you should notice that nothing comes back. Why? Parameters are passed in as strings, but we expect the <code>id</code> to be a number, and the repo does not find the mission because of it. In the params to <code>getMission</code>, <code>id</code> is of type number, but, unfortunately, we are practically lying to TypeScript that the value is coming in as a number.</p>
 <p>We could parse the string value of <code>id</code> into a number manually inside the controller method before calling into the service, but once again this muddies our controller code with duplicated logic throughout. It would be nice to have a facility to do this for us automatically. </p>
 <p>Nest comes to the rescue here!</p>
 <h3 id="nest-pipes"><a class="header-link" href="#nest-pipes"></a>Nest Pipes</h3>
@@ -206,11 +220,12 @@ async getMission(<span class="hljs-meta">@Param</span>(<span class="hljs-string"
   <span class="hljs-keyword">const</span> { metatype } = metadata;
   <span class="hljs-keyword">const</span> convertedValue = plainToClass(metatype, value);
   <span class="hljs-keyword">return</span> convertedValue;
-}</code></pre><p>The Pipe itself is simple. It implements the <code>PipeTransform</code> interface, and has one method, <code>transform</code>, which is called for each parameter a route handler takes in. </p>
+}</code></pre><p><copy-button></copy-button></p>
+<p>The Pipe itself is simple. It implements the <code>PipeTransform</code> interface, and has one method, <code>transform</code>, which is called for each parameter a route handler takes in. </p>
 <p>The <code>transform</code> method takes two arguments: the first being the value being passed into the parameter, and the second is meta-data about the parameter itself. This metadata is derived from TypeScript and the <code>emitDecoratorMetadata</code> parameter that is enabled in the <code>tsconfig.json</code> file. When this option enabled, TypeScript automatically includes information about all your object&#39;s types, which can then be used at runtime. This metadata is very powerful and enables some of the functionality you see in Angular and Nest.</p>
 <p>Next, we call <code>plainToClass</code>, which converts a value into a particular type, then return the converted value, which becomes the new value for the parameter.</p>
 <p>Pipes are bound in all the same ways we saw Interceptors bound earlier. Once again we elect to bind the pipe at the app level, and this is already taken care of in the starter app.</p>
-<p>Now, make a call to <a href="http://localhost:3000/missions/1">http://localhost:3000/missions/1</a>, and you should see a single mission come back.</p>
+<p>Now, data being passed into all controller handlers will have their types converted automatically. Make a call to <a href="http://localhost:3000/missions/1">http://localhost:3000/missions/1</a>, and you should see a single mission come back.</p>
 <h3 id="update-angular-missions-service"><a class="header-link" href="#update-angular-missions-service"></a>Update Angular Missions Service</h3>
 <p>We can now pull back a specific mission from our API, so let&#39;s update the mission service in the Ionic project to do just that. </p>
 <p>Add the following method to the <code>missions.service.ts</code> service:</p>
@@ -220,7 +235,8 @@ async getMission(<span class="hljs-meta">@Param</span>(<span class="hljs-string"
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.httpClient
     .get&lt;{data: Mission}&gt;(<span class="hljs-string">`http://localhost:3000/missions/<span class="hljs-subst">${id}</span>`</span>)
     .pipe(map(response =&gt; response.data));
-}</code></pre><h3 id="mission-form"><a class="header-link" href="#mission-form"></a>Mission Form</h3>
+}</code></pre><p><copy-button></copy-button></p>
+<h3 id="mission-form"><a class="header-link" href="#mission-form"></a>Mission Form</h3>
 <p>The mission form will display in a modal when the user clicks a mission from the list. From here, a user can view the mission, edit, and update it. The mission form is already created as a part of the base solution, so let&#39;s update the <code>MissionFormComponent</code> to pull the selected one back from the service and display it.</p>
 <p>Update the <code>MissionFormComponent</code> to use the following <code>ngOnInit</code>:</p>
 <!-- gsr-ng-missionform-component-ngoninit -->
@@ -232,7 +248,8 @@ async getMission(<span class="hljs-meta">@Param</span>(<span class="hljs-string"
   } <span class="hljs-keyword">else</span> {
     <span class="hljs-keyword">this</span>.mission$ = of({ active: <span class="hljs-literal">false</span> } as <span class="hljs-built_in">any</span>);
   }
-}</code></pre><p>The mission form template is a simple Ionic page displays a the details of the mission in a form with a few text inputs and a switch button. The template is already filled out in the starter app, but here it is for your reference:</p>
+}</code></pre><p><copy-button></copy-button></p>
+<p>The mission form template is a simple Ionic page displays a the details of the mission in a form with a few text inputs and a switch button. The template is already filled out in the starter app, but here it is for your reference:</p>
 <p><code>src/client/app/mission-form/mission-form.component.html</code></p>
 <pre class="hljs"><code><span class="hljs-tag">&lt;<span class="hljs-name">ion-header</span>&gt;</span>
   <span class="hljs-tag">&lt;<span class="hljs-name">ion-toolbar</span>&gt;</span>
@@ -286,7 +303,8 @@ async getMission(<span class="hljs-meta">@Param</span>(<span class="hljs-string"
   <span class="hljs-keyword">if</span> (data.refreshMissions) {
     <span class="hljs-keyword">this</span>.missions = <span class="hljs-keyword">this</span>.missionsService.getMissions();
   }
-}</code></pre><p>The <code>&lt;ion-item&gt;</code> in the home page template has a click handler to call the above method:</p>
+}</code></pre><p><copy-button></copy-button></p>
+<p>The <code>&lt;ion-item&gt;</code> in the home page template has a click handler to call the above method:</p>
 <pre class="hljs"><code><span class="hljs-tag">&lt;<span class="hljs-name">ion-item</span> *<span class="hljs-attr">ngFor</span>=<span class="hljs-string">"let mission of (missions | async)"</span> (<span class="hljs-attr">click</span>)=<span class="hljs-string">"openMission(mission.id)"</span>&gt;</span></code></pre><p>We will leave the form submission for the next lab.</p>
 <h3 id="lab-2-bonus-exercise"><a class="header-link" href="#lab-2-bonus-exercise"></a>Lab 2 Bonus Exercise</h3>
 <p>Currently, if we supply an id to the <code>missions/:id</code> endpoint that doesn&#39;t exist, the API returns a null object. We should return a 404 Not Found status code instead.</p>
@@ -316,7 +334,8 @@ async updateMission(id: <span class="hljs-built_in">number</span>, mission: Miss
 
 deleteMission(id: <span class="hljs-built_in">number</span>) {
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.missionsRepository.delete(id);
-}</code></pre><p>The <code>createMission</code> and <code>deleteMission</code> methods are straightforward, just passing through to the mission repository. The <code>updateMission</code> method, however, is making sure we preserve the original <code>createdAt</code> and <code>createdBy</code> values that were originally on the mission. This code is an example of the type of logic that could go into a service class.</p>
+}</code></pre><p><copy-button></copy-button></p>
+<p>The <code>createMission</code> and <code>deleteMission</code> methods are straightforward, just passing through to the mission repository. The <code>updateMission</code> method, however, is making sure we preserve the original <code>createdAt</code> and <code>createdBy</code> values that were originally on the mission. This code is an example of the type of logic that could go into a service class.</p>
 <h3 id="update-nest-missions-controller-to-add-post-and-put-methods"><a class="header-link" href="#update-nest-missions-controller-to-add-post-and-put-methods"></a>Update Nest Missions Controller to add Post and PUT Methods</h3>
 <p>Add the following methods to the <code>MissionsController</code>:</p>
 <!--- gsr-nest-missions-controller-createupdatedelete --->
@@ -334,14 +353,15 @@ async updateMission(<span class="hljs-meta">@Param</span>(<span class="hljs-stri
 <span class="hljs-meta">@Delete</span>(<span class="hljs-string">':id'</span>)
 async deleteMission(<span class="hljs-meta">@Param</span>(<span class="hljs-string">'id'</span>) id: <span class="hljs-built_in">number</span>) {
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.missionsService.deleteMission(id);
-}</code></pre><p>These new methods each use a new decorator (<code>@Post</code>, <code>@Put</code>, and <code>@Delete</code>) to let Nest know which HTTP method each route handler should respond to.</p>
+}</code></pre><p><copy-button></copy-button></p>
+<p>These new methods each use a new decorator (<code>@Post</code>, <code>@Put</code>, and <code>@Delete</code>) to let Nest know which HTTP method each route handler should respond to.</p>
 <p>In the params to both the create and update methods, we use the <code>@Body</code> decorator to indicate we want to populate the <code>mission</code> object from the request body. We don&#39;t need to set up anything additional (like add a body parser), as Nest takes care of this for us.</p>
 <p>Additionally, since we are still using the <code>DataPipe</code> that we set up earlier, <code>mission</code> is automatically converted to a MissionEntity class when coming into our route handlers. This conversion is important right now because we set some default values for the <code>createdAt</code> and <code>createdBy</code> properties wouldn&#39;t be set unless this was an actual instance of <code>MemberEntity</code>.</p>
 <p>Now that our API supports the remaining create, update, and delete methods, let&#39;s add it to our Ionic app.</p>
 <h3 id="update-angular-missions-service-for-create,-update,-and-delete-methods"><a class="header-link" href="#update-angular-missions-service-for-create,-update,-and-delete-methods"></a>Update Angular Missions Service for Create, Update, and Delete methods</h3>
 <p>Update the <strong>client</strong> <code>MissionsService</code> class with the remaining methods:</p>
 <!-- gsr-ng-missions-service-createupdatedelete -->
-<p><code>gsr-ng-missions-service-createupdatedelete</code></p>
+<p><code>src/client/app/services/missions.service.ts</code></p>
 <pre class="hljs"><code>createMission(mission: Mission) {
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.httpClient
     .post&lt;Mission&gt;(<span class="hljs-string">`http://localhost:3000/missions`</span>, mission)
@@ -358,7 +378,8 @@ deleteMission(mission: Mission) {
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.httpClient
     .delete&lt;Mission&gt;(<span class="hljs-string">`http://localhost:3000/missions/<span class="hljs-subst">${mission.id}</span>`</span>)
     .toPromise().catch(response =&gt; { <span class="hljs-keyword">throw</span> response.error; });
-}</code></pre><p>The new methods above follow the same pattern as before, except now we are using the <code>catchError</code> operator from RXJS to capture any HTTP errors that come back from the API. </p>
+}</code></pre><p><copy-button></copy-button></p>
+<p>The new methods above follow the same pattern as before, except now we are using the <code>catchError</code> operator from RXJS to capture any HTTP errors that come back from the API. </p>
 <p>With the service methods taken care of, let&#39;s look at updating the mission form next.</p>
 <h3 id="updating-mission-form-to-support-create-and-edit"><a class="header-link" href="#updating-mission-form-to-support-create-and-edit"></a>Updating Mission Form to Support Create and Edit</h3>
 <p>When the user submits the form on the mission form screen, its setup to call the <code>submit</code> method in <code>MissionFormComponent</code>. Update that class with the following <code>sumbit</code> method:</p>
@@ -383,10 +404,11 @@ deleteMission(mission: Mission) {
     });
     await alert.present();
   }
-}</code></pre><p>First, we take a look to see if this is a new mission or an existing one by checking to see if the mission has an id, then we call the appropriate service method based on this check. Next, we subscribe to the call so we can dismiss the modal when it is complete. We also save a reference to the subscription so we can make sure to unsubscribe from it when the call is done, which helps prevent any potential memory leaks.</p>
+}</code></pre><p><copy-button></copy-button></p>
+<p>First, we take a look to see if this is a new mission or an existing one by checking to see if the mission has an id, then we call the appropriate service method based on this check. Next, we subscribe to the call so we can dismiss the modal when it is complete. We also save a reference to the subscription so we can make sure to unsubscribe from it when the call is done, which helps prevent any potential memory leaks.</p>
 <h3 id="showing-new-mission-modal"><a class="header-link" href="#showing-new-mission-modal"></a>Showing New Mission Modal</h3>
 <p>The last thing we need to do is hook up the add a button to open up the mission form modal. In <code>home.page.html</code>, there is a button in the Ionic header to create new missions, and it is set up to call <code>newMission()</code> when clicked like so:</p>
-<pre class="hljs"><code><span class="hljs-tag">&lt;<span class="hljs-name">ion-button</span> (<span class="hljs-attr">click</span>)=<span class="hljs-string">"newMission()"</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">ion-icon</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"add"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">ion-icon</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">ion-button</span>&gt;</span></code></pre><p>Then update the <code>newMission</code> method to the class in <code>home.page.ts</code>:</p>
+<pre class="hljs"><code><span class="hljs-tag">&lt;<span class="hljs-name">ion-button</span> (<span class="hljs-attr">click</span>)=<span class="hljs-string">"newMission()"</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">ion-icon</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"add"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">ion-icon</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">ion-button</span>&gt;</span></code></pre><p>Update the <code>newMission</code> method to the class in <code>home.page.ts</code>:</p>
 <!-- gsr-ng-home-page-newmission -->
 <p><code>src/client/app/home/home.page.ts</code></p>
 <pre class="hljs"><code>async newMission() {
@@ -398,7 +420,8 @@ deleteMission(mission: Mission) {
   <span class="hljs-keyword">if</span> (data.refreshMissions) {
     <span class="hljs-keyword">this</span>.missions = <span class="hljs-keyword">this</span>.missionsService.getMissions();
   }
-}</code></pre><h3 id="deleting-missions"><a class="header-link" href="#deleting-missions"></a>Deleting Missions</h3>
+}</code></pre><p><copy-button></copy-button></p>
+<h3 id="deleting-missions"><a class="header-link" href="#deleting-missions"></a>Deleting Missions</h3>
 <p>When the <code>MissionForm</code> modal loads an existing mission, a row displays above the form showing the mission&#39;s ID and a delete icon. Next, we enable the delete icon to allow a user to delete missions.</p>
 <p>There is a click handler to the &quot;trash&quot; icon in <code>mission-form.component.html</code>:</p>
 <pre class="hljs"><code><span class="hljs-tag">&lt;<span class="hljs-name">ion-icon</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"trash"</span> (<span class="hljs-attr">click</span>)=<span class="hljs-string">"delete(mission)"</span> <span class="hljs-attr">color</span>=<span class="hljs-string">"danger"</span> <span class="hljs-attr">slot</span>=<span class="hljs-string">"end"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">ion-icon</span>&gt;</span></code></pre><p>In <code>MissionFormComponent</code>, update the delete method:</p>
@@ -436,7 +459,8 @@ deleteMission(mission: Mission) {
     ]
   });
   await alert.present();
-}</code></pre><p>Now, you can delete missions, and a confirmation alert box will ask you to confirm the deletion.</p>
+}</code></pre><p><copy-button></copy-button></p>
+<p>Now, you can delete missions, and a confirmation alert box will ask you to confirm the deletion.</p>
 <p>With all that now in place, we should have a fully functioning app for our space rangers to create, read, update, and delete (CRUD) missions. </p>
 <p>When we submit an invalid form (like when a title or reward is missing), we get back a server error that is not too helpful. Next, we will see how to put proper validation in place in our API to make sure the models are valid before we even send them to the database.</p>
 <h3 id="validation"><a class="header-link" href="#validation"></a>Validation</h3>
@@ -465,7 +489,8 @@ deleteMission(mission: Mission) {
   createdAt: <span class="hljs-built_in">Date</span> = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>();
   <span class="hljs-meta">@Exclude</span>()
   createdBy = <span class="hljs-string">'user'</span>;
-}</code></pre><blockquote>
+}</code></pre><p><copy-button></copy-button></p>
+<blockquote>
 <p>The IsDefined, IsString, IsNotEmpty, IsNumber, and IsBoolean validators are imported from <code>class-validator</code>;</p>
 </blockquote>
 <p>Nest Pipes (that we used earlier to convert types on the way in) are also good at validation. In fact, Nest includes a ValidationPipe that utilizes <code>class-validator</code> out of the box. Instead of creating our own validation pipe, we us the built in one. Its already setup in the servers &#39;AppModule&#39; for us:</p>
@@ -493,12 +518,14 @@ deleteMission(mission: Mission) {
     <span class="hljs-keyword">throw</span> { message };
   }
   <span class="hljs-keyword">throw</span> error;
-}</code></pre><p>Then update the create, update, and delete methods to use <code>handleError</code> in the promises catch handler:</p>
+}</code></pre><p><copy-button></copy-button></p>
+<p>Then update the create, update, and delete methods to use <code>handleError</code> in the promises catch handler:</p>
 <pre class="hljs"><code>createMission(mission: Mission) {
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.httpClient
     .post&lt;Mission&gt;(<span class="hljs-string">`http://localhost:3000/missions`</span>, mission)
     .toPromise().catch(<span class="hljs-keyword">this</span>.handleError);
-}</code></pre><blockquote>
+}</code></pre><p><copy-button></copy-button></p>
+<blockquote>
 <p>Make sure to update <code>updateMission</code> and <code>deleteMission</code> as well.</p>
 </blockquote>
 <p>Now, when you submit an invalid form, you get a proper 400 error back. In this example, we loop through the error objects and construct a string showing all the validation issues, but you could do a lot more with it. The errors contain the validation rule that caused the error and the property for which the validation was applied to, so you could go fancier in showing the errors than a simple alert modal.</p>
@@ -515,7 +542,7 @@ deleteMission(mission: Mission) {
 <li><code>POST</code> and <code>PUT</code> requests will require a user or admin role.</li>
 <li><code>DELETE</code> requests will require the admin role.</li>
 </ul>
-<h3 id="create-roles-decorator"><a class="header-link" href="#create-roles-decorator"></a>Create Roles Decorator</h3>
+<h3 id="nest-roles-decorator"><a class="header-link" href="#nest-roles-decorator"></a>Nest Roles Decorator</h3>
 <p>In our base project, we have a <code>Roles</code> decorator that we can use on our controller methods to specify which roles we want the upcoming auth guard to check. </p>
 <p>To specify which roles we want a route handler to check for access, we use <code>@Roles(&#39;...&#39;)</code> on each of the controller&#39;s methods. In <code>MissionsController</code> add <code>@Roles</code> and specify the role to the following methods:</p>
 <p><code>src/server/app/missions/missions.controller.ts</code></p>
@@ -529,7 +556,8 @@ async updateMission(...) { ... }
 
 <span class="hljs-meta">@Delete</span>(<span class="hljs-string">':id'</span>)
 <span class="hljs-meta">@Roles</span>(<span class="hljs-string">'admin'</span>)
-async deleteMission(...) { ... }</code></pre><h3 id="create-nest-guard"><a class="header-link" href="#create-nest-guard"></a>Create Nest Guard</h3>
+async deleteMission(...) { ... }</code></pre><p><copy-button></copy-button></p>
+<h3 id="nest-guards"><a class="header-link" href="#nest-guards"></a>Nest Guards</h3>
 <p>Open the <strong>server</strong> <code>AuthGuard</code> file, and replace the class&#39;s <code>canActivate</code> method with the following:</p>
 <!-- gsr-nest-auth-guard-canactivate -->
 <p><code>src/server/app/util/auth.guard.ts</code></p>
@@ -561,7 +589,8 @@ async deleteMission(...) { ... }</code></pre><h3 id="create-nest-guard"><a class
 
   <span class="hljs-keyword">const</span> hasRole = user.roles.some(role =&gt; requiredRoles.indexOf(role) &gt; <span class="hljs-number">-1</span>);
   <span class="hljs-keyword">return</span> hasRole;
-}</code></pre><p>Let&#39;s break the above code down. </p>
+}</code></pre><p><copy-button></copy-button></p>
+<p>Let&#39;s break the above code down. </p>
 <p>First, we check to see if there is an Authorization header, and if there is, we pull the token out of the header and then retrieve the user from the provided users service. If a user is not found, the request is rejected.</p>
 <p>Next, we try to pull the list of roles applied to the request handler by checking for a decorator names &quot;roles&quot;, and put those roles into the <code>requiredRoles</code> variable. If the method doesn&#39;t have the decorator, it returns undefined, so we make sure to set <code>requiredRoles</code> to an empty array in that case. If we do have a user, we attach it to the request object so we can access it at a later point in the HTTP request (which we will do in the next section).</p>
 <p>If requiredRoles is empty, authentication is not required for this call, so we return true.</p>
@@ -594,7 +623,8 @@ async deleteMission(...) { ... }</code></pre><h3 id="create-nest-guard"><a class
   });
 
   <span class="hljs-keyword">return</span> next.handle(newRequest);
-}</code></pre><p>Interceptors are a simple class that implements an <code>intercept</code> method. In our <code>intercept</code>, we check to make sure if the user is currently &quot;logged in&quot; (by seeing if they have an auth-token value in local storage, which is set by the login screen). If not, the request goes through without any modification. If there is an auth-token, we clone the original request (because requests are immutable, we need a new copy to make changes to it) and add an <code>Authorization</code> header with the auth-token for its value.</p>
+}</code></pre><p><copy-button></copy-button></p>
+<p>Interceptors are a simple class that implements an <code>intercept</code> method. In our <code>intercept</code>, we check to make sure if the user is currently &quot;logged in&quot; (by seeing if they have an auth-token value in local storage, which is set by the login screen). If not, the request goes through without any modification. If there is an auth-token, we clone the original request (because requests are immutable, we need a new copy to make changes to it) and add an <code>Authorization</code> header with the auth-token for its value.</p>
 <p>The interceptor is already registered in our Angular apps main app module providers:</p>
 <pre class="hljs"><code>{
   provide: HTTP_INTERCEPTORS,
@@ -617,7 +647,8 @@ async createMission(<span class="hljs-meta">@Body</span>() mission: MissionEntit
 <p><code>src/server/app/util/getuser.decorator.ts</code></p>
 <pre class="hljs"><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> GetUser = createParamDecorator((data, req) =&gt; {
   <span class="hljs-keyword">return</span> req.user;
-});</code></pre><p>The <code>createParamDecorator</code> helper method provided by Nest takes care of all the hard work and gives you direct access to the request object. Here, we simply return the user from the request.</p>
+});</code></pre><p><copy-button></copy-button></p>
+<p>The <code>createParamDecorator</code> helper method provided by Nest takes care of all the hard work and gives you direct access to the request object. Here, we simply return the user from the request.</p>
 <p>Now, we can update the createMission method to use the new <code>GetUser</code> decorator:</p>
 <pre class="hljs"><code><span class="hljs-meta">@Roles</span>(<span class="hljs-string">'user'</span>)
 <span class="hljs-meta">@Post</span>()
