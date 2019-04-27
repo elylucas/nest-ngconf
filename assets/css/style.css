@@ -3,7 +3,8 @@ body {
   -webkit-text-size-adjust: 100%;
   line-height: 1.5;
   color: #24292e;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
   font-size: 16px;
   line-height: 1.5;
   word-wrap: break-word;
@@ -32,10 +33,29 @@ blockquote {
   border-left: 0.25em solid #dfe2e5;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   margin-top: 36px;
 }
 
-a, a:visited {
-  color: #6a737d
+a,
+a:visited {
+  color: #6a737d;
+}
+
+.copy-button {
+  display: block;
+  position: relative;
+  right: 4px;
+  top: -44px;
+  text-align: right;
+}
+
+.file-path {
+  position: relative;
+  bottom: -18px;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
 }
