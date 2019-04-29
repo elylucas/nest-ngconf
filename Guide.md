@@ -326,8 +326,9 @@ getMission(id: number) {
 
 <copy-button></copy-button>
 
-
 Update the `MissionController` to call into this new service method:
+
+<!-- gsr-nest-missions-controller-getmission -->
 
 `src/server/app/missions/missions.controller.ts`
 
@@ -424,7 +425,7 @@ ngOnInit() {
 
 <copy-button></copy-button>
 
-The mission form template is a simple Ionic page displays a the details of the mission in a form with a few text inputs and a switch button. The template is already filled out in the starter app, but here it is for your reference:
+The mission form template is a simple Ionic page that displays the details of the mission in a form. The template is already filled out in the starter app, but here it is for your reference:
 
 `src/client/app/mission-form/mission-form.component.html`
 
@@ -471,7 +472,7 @@ The mission form template is a simple Ionic page displays a the details of the m
 
 ### Update Mission List to Open Mission
 
-We open an Ionic modal and display the `MissionForm` when a user clicks on one of the missions in the list. 
+We open an Ionic modal and display the `MissionForm` when a user clicks on a mission in the list. 
 
 Update the `HomePage`file to add the `openMission` method:
 
@@ -791,13 +792,15 @@ Nest Pipes (that we used earlier to convert types on the way in) are also good a
 
 > `ValidationPipe` is imported from '@nestjs/common`.
 
+Now that you have validation decorators on `MissionEntity`, the Nest `ValidationPipe` will return a bad request error with a list of the messages that caused the error. Next, we will parse those errors on the client and display a better error dialog to the user.
+
 ### Update Angular Mission Service to Process Validation Errors
 
-Now when an invalid mission is submitted, the API will through a validation error with helpful data around why the error happened. Let's use that error to construct a message to show the user.
+When a user tries to create or update a mission and does not provide a title or reward, the API will now throw a bad request status. We need to parse that error response in the service.
 
 In the **client** `MissionService` add a `handleError` method that the HTTP responses can use to parse the validation error into a single string:
 
-<!--gsr-ng-missions-service-handleerror -->
+<!-- gsr-ng-missions-service-handleerror -->
 
 `src/client/app/services/missions.service.ts`
 
@@ -834,7 +837,7 @@ createMission(mission: Mission) {
 
 > Make sure to update `updateMission` and `deleteMission` as well.
 
-Now, when you submit an invalid form, you get a proper 400 error back. In this example, we loop through the error objects and construct a string showing all the validation issues, but you could do a lot more with it. The errors contain the validation rule that caused the error and the property for which the validation was applied to, so you could go fancier in showing the errors than a simple alert modal.
+Now, when you submit an invalid form, you get a proper 400 Bad Request error response. In this example, we loop through the error objects and construct a string showing all the validation issues, but you could do a lot more with it. The errors contain the validation rule that caused the error and the property for which the validation was applied to, so you could go fancier in showing the errors than a simple alert modal.
 
 ## Lab 4
 
@@ -855,6 +858,8 @@ We will also set up a simple role system that contains two roles, users and admi
 ### Nest Roles Decorator 
 
 In our base project, we have a `Roles` decorator that we can use on our controller methods to specify which roles we want the upcoming auth guard to check. 
+
+The decorator was created with the Nest CLI, and out of the box does everything we need it to do.
 
 To specify which roles we want a route handler to check for access, we use `@Roles('...')` on each of the controller's methods. In `MissionsController` add `@Roles` and specify the role to the following methods:
 

@@ -1,150 +1,218 @@
 # NestJS for NG Devs WS Steps
 
-## Lab 1
+## Setup
 
-Create Service: `nest g service missions`
+- Delete db.json
+- Start off clean master
+- Start timers, have timer app ready
 
-Mission service: `gsr-nest-missions-service`
+## Lab 1 – 12:50 (15 mins)
 
-Create Controller: `nest g controller missions`
+### Create
 
-Mission Controller: `gsr-nest-missions-controller`
+- Nest Mission service getMissions: `gsr-nest-missions-service-getMissions`
 
-Add `@Exclude()` to createdAt and createdBy to MissionEntity
+	```typescript
+	getMissions() {
+	  return this.missionsRepository.getList();
+	}
+	```
 
-Show how to use classToPlain in the controller get method
+- Nest Mission Controller getMissions: `gsr-nest-missions-controller-getMissions`
 
-Create Interceptor: `nest g interceptor util/data`
+	```typescript
+	@Get()
+	async getMissions() {
+	  return this.missionsService.getMissions();
+	}
+	```
 
-Data Interceptor: `gsr-nest-data-interceptor`
+- Add `@Exclude()` to createdAt and createdBy to MissionEntity
 
-Add interceptor to module providers:
-```
-{
-  provide: APP_INTERCEPTOR,
-  useClass: DataInterceptor,
-}
-```
+- Show how to use classToPlain in the controller get method
 
-Mission Model: `gsr-mission-model`
+### Interceptor
 
-Create NG Service: `npx ionic g service services/missions`
+- Nest Data Interceptor: `‌gsr-nest-data-interceptor-intercept`
 
-NG Mission Service: `gsr-ng-missions-service`
+	``` code omitted ```
 
-Home Page TS: `gsr-ng-homepage-ts`
+	- Show ways to include interceptor
 
-Home Page HTML: `gsr-ng-homepage-template`
+- Show Mission Model
 
-Show app
+- NG Mission Service getMissions: `gsr-ng-missions-service-getmissions`
 
-## Lab 2
+	```typescript
+	getMissions() {
+	  return this.httpClient
+	    .get<{ data: Mission[] }>('http://localhost:3000/missions')
+	    .pipe(map(response => response.data));
+	}
+	```
 
-Update Nest Mission Service GET method: `gsr-nest-missions-service-get`
+- NG Home Page ngOnInit: `gsr-ng-missions-controller-oninit`
 
-Update Nest Mission Controller GET method: `gsr-nest-missions-controller-get`
+	```typescript
+	ngOnInit() {
+	  this.missions = this.missionsService.getMissions();
+	}
+	```
 
-Show nothing comes back in request
+	-	Show homepage template
 
-Create Nest Data Pipe: `nest g pipe util/data`
+- Show app
 
-Data Pipe: `gsr-nest-data-pipe`
+## Lab 2 – 1:15 (15 mins)
 
-Add data pipe to modules imports:
-```typescript
-{
-  provide: APP_PIPE,
-  useClass: DataPipe
-}
-```
+### Get Single
 
-Update NG Mission Service GET method: `gsr-ng-missions-service-getbyid`
+- Nest Mission Service getMission: `gsr-nest-missions-service-getmission`
 
-Create NG Mission Form: `npx ionic g component MissionForm`
+	```typescript
+	getMission(id: number) {
+	  return this.missionsRepository.get(id);
+	}
+	```
 
-Add Form to home module:
-```typescript
-  entryComponents: [MissionFormComponent],
-  declarations: [HomePage, MissionFormComponent]
-```
+- Nest Mission Controller getMission: `gsr-nest-missions-controller-getmission`
 
-Mission Form TS: `gsr-ng-missionform-ts`
+	```typescript
+	@Get(':id')
+	async getMission(@Param('id') id: number) {
+	  return this.missionsService.getMission(id);
+	}
+	```
 
-Mission Form HTML: `gsr-ng-missionform-template`
+	- Show nothing comes back in request
 
-Home Page TS openMission: `gsr-ng-homepage-openMission`
-- inject modalController
+### Nest Pipe
 
-Home Page HTML Add click handler to `<ion-item>`: `(click)="openMission(mission.id)"`
+- Nest Data Pipe transform: `gsr-nest-data-pipe-transform`
 
-## Lab 3
+	```typescript
+	transform(value: any, metadata: ArgumentMetadata) {
+	  const { metatype } = metadata;
+	  if (!metatype) {
+	    return value;
+	  }
+	  const convertedValue = plainToClass(metatype, value);
+	  return convertedValue;
+	}
+	```
 
-Update Nest Mission Service CUD methods: `gsr-nest-missions-service-createupdatedelete`
+	- Show pipe is already in providers
 
-Update Nest Mission Controller CUD methods: `gsr-nest-missions-controller-createupdatedelete`
+### NG Mission getSingle
 
-Update NG Mission Service CUD methods: `gsr-ng-missions-service-createupdatedelete`
+- NG Mission Service getMissionById: `gsr-ng-missions-service-getmissionbyid`
 
-Update NG Mission Form submit method: `gsr-ng-missionform-submit-method`
-- inject alertController
+	```typescript
+	getMissionById(id: number) {
+	  return this.httpClient
+	    .get<{data: Mission}>(`http://localhost:3000/missions/${id}`)
+	    .pipe(map(response => response.data));
+	}
+	```
 
-Home Page HTML Add click handler to new button: `(click)="newMission()"`
+- NG Mission Form ngOnInit: `gsr-ng-missionform-component-ngoninit`
 
-Update Home Page TS newMission: `gsr-ng-homepage-newmission`
+	``` code omitted ```
+	
+	- Show Mission Form HTML
 
-Demo
+- NG Home Page openMission: `gsr-ng-home-page-openmission`
 
-NG Mission Form add click handler to trash icon: `(click)="delete(mission)"`
+	``` code omitted ```
 
-Update NG Mission Form delete method: `gsr-ng-missionform-delete`
+ - Show `<ion-item>` click handler in html
 
-Demo
+## Lab 3 – 1:40 (15 mins)
 
-## Lab 4
+### Create/Update/Delete
 
-Add Validators to mission entity: `@IsDefined() @IsString() @IsNotEmpty() @IsNumber() @IsBoolean()`
+- Nest Mission Service CUD methods: `‌gsr-nest-missions-service-createupdatedelete`
 
-Add to nest app module providers:
-```typescript
-{
-  provide: APP_PIPE,
-  useClass: ValidationPipe,
-}
-```
+	``` code omitted ```
 
-Update NG Missions Service handleError method: `gsr-ng-missions-service-handleerror`
+- Nest Mission Controller CUD methods: `gsr-nest-missions-controller-createupdatedelete`
 
-Update NG Missions CUD methods to use handleError: `.toPromise().catch(this.handleError);`
+	``` code omitted ```
 
-Demo
+- NG Mission Service CUD methods: `gsr-ng-missions-service-createupdatedelete`
 
-Create Nest Roles Decorator: `nest g decorator util/roles`
+	``` code omitted ```
+	
+- NG Mission Form submit: ` gsr-ng-mission-form-component-submit`
 
-Add Roles to controller methods: `@Roles('user')` to POST and PUT,  `@Roles('admin')` to DELETE
+	``` code omitted ```
 
-Create Nest Auth Guard: `nest g guard util/auth`
+- NG Home Page newMission: `gsr-ng-home-page-newmission`
 
-Nest Auth Guard: `gsr-nest-authguard`
+	``` code omitted ```
+	
+	- Show button click handler in html
 
-Add to nest app module providers:
-```typescript
-{
-  provide: APP_GUARD,
-  useClass: AuthGuard,
-}
-```
+### Delete 
 
-Create file at src/client/app/util/auth.interceptor.ts
+- NG Mission Form delete: `gsr-ng-mission-form-component-delete`
 
-NG Auth Interceptor: `gsr-ng-auth-interceptor`
+	``` code omitted ```
 
-Add to ng app module providers:
-```typescript
-{
-  provide: HTTP_INTERCEPTORS,
-  useClass: AuthInterceptor,
-  multi: true
-}
-```
+- Demo
 
-Demo
+### Validation
+ 
+- Nest Mission Entity validators `IsDefined`, `IsString`, `IsNotEmpty`, `IsNumber`, `IsBoolean`
+
+	``` code omitted ```
+
+- NG Missions Service handleError: `gsr-ng-missions-service-handleerror`
+
+	``` code omitted ```
+
+	- Update NG Missions CUD methods to use handleError: `.toPromise().catch(this.handleError);`
+
+- Demo
+
+## Lab 4 - 2:05 (15 mins)
+
+### Authentication
+
+- Add `@Roles('user') to Post and Put, and `@Roles('admin')` to Delete
+- Nest AuthGuard canActivate: `gsr-nest-auth-guard-canactivate`
+
+	``` code omitted ```
+	
+	- Show it registered in providers
+
+### HTTP Interceptor
+
+- NG AuthInterceptor intercept: `gsr-ng-auth-interceptor-intercept`
+
+	``` code omitted ```
+	
+	- Show registered in providers
+
+### GetUser Decorator
+
+- Show how we could get access to user from request:
+
+	```typescript
+	@Roles('user')
+	@Post()
+	async createMission(@Body() mission: MissionEntity, @Request() req: any) {
+	  const user: User = req.user;
+	  mission.createdBy = user.id;
+	  return this.missionsService.createMission(mission);
+	}
+	```
+	
+- Nest GetUserDecorator getUser `gsr-nest-getuser-decorator-getuser`
+
+	```typescript
+	export const GetUser = createParamDecorator((data, req) => {
+	  return req.user;
+	});
+	```
+	
