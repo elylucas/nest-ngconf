@@ -14,8 +14,6 @@ git clone https://github.com/elylucas/nest-ngconf.git
 
 Go into the `nest-ngconf` directory and install dependencies:
 
-
-
 ```bash
 cd nest-ngconf
 npm install
@@ -24,7 +22,6 @@ npm install
 <copy-button></copy-button>
 
 To start the dev server for both Ionic and Nest, run:
-
 
 ```bash
 npm run dev

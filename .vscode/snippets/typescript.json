@@ -19,6 +19,7 @@
 		"description": "gsr-nest-missions-controller-getMissions"
 	},
 	"gsr-nest-data-interceptor-intercept": {
+		"prefix": "gsr-nest-data-interceptor-intercept",
 		"body": [
 			"intercept(context: ExecutionContext, next: CallHandler): Observable<any> {",
 			"  return next.handle().pipe(",
@@ -29,7 +30,8 @@
 			"    })",
 			"  );",
 			"}"
-		]
+		],
+		"description": "gsr-nest-data-interceptor-intercept"
 	},
 	"gsr-ng-missions-service-getmissions": {
 		"prefix": "gsr-ng-missions-service-getmissions",

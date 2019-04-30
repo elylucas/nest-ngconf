@@ -6,7 +6,7 @@
 - Start off clean master
 - Start timers, have timer app ready
 
-## Lab 1 – 12:50 (15 mins)
+## Lab 1 – 12:55 (15 mins)
 
 ### Create
 
@@ -63,7 +63,7 @@
 
 - Show app
 
-## Lab 2 – 1:15 (15 mins)
+## Lab 2 – 1:20 (15 mins)
 
 ### Get Single
 
@@ -127,7 +127,7 @@
 
  - Show `<ion-item>` click handler in html
 
-## Lab 3 – 1:40 (15 mins)
+## Lab 3 – 1:45 (15 mins)
 
 ### Create/Update/Delete
 
@@ -175,7 +175,7 @@
 
 - Demo
 
-## Lab 4 - 2:05 (15 mins)
+## Lab 4 - 2:10 (15 mins)
 
 ### Authentication
 
