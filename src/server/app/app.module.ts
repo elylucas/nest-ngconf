@@ -17,23 +17,7 @@ import { UsersService } from './users/users.service';
     AppService,
     MissionsRepository,
     MissionsService,
-    UsersService,
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: DataInterceptor
-    },
-    {
-      provide: APP_PIPE,
-      useClass: DataPipe
-    },
-    {
-      provide: APP_PIPE,
-      useClass: ValidationPipe,
-    },
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
-    }
+    UsersService
   ]
 })
 export class AppModule {}
