@@ -44,14 +44,14 @@
 		],
 		"description": "gsr-ng-missions-service-getmissions"
 	},
-	"gsr-ng-missions-controller-oninit": {
-		"prefix": "gsr-ng-missions-controller-oninit",
+	"gsr-ng-home-page-oninit": {
+		"prefix": "gsr-ng-home-page-oninit",
 		"body": [
 			"ngOnInit() {",
 			"  this.missions = this.missionsService.getMissions();",
 			"}"
 		],
-		"description": "gsr-ng-missions-controller-oninit"
+		"description": "gsr-ng-home-page-oninit"
 	},
 	"gsr-nest-missions-service-getmission": {
 		"prefix": "gsr-nest-missions-service-getmission",
