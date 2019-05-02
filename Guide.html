@@ -84,7 +84,8 @@ async getMissions() {
   <span class="hljs-meta">@Exclude</span>()
   createdBy: <span class="hljs-built_in">string</span>;
 }</code></pre><p><copy-button></copy-button></p>
-<p>For the properties to be excluded, we must run them through the <code>classToPlain</code> function from the <code>class-transformer</code> library. We could do this in the controller like so:</p>
+<p>For the properties to be excluded, we must run them through the <code>classToPlain</code> function from the <code>class-transformer</code> library. </p>
+<p>We could run <code>classToPlain</code> in the controller like so:</p>
 <pre class="hljs"><code><span class="hljs-meta">@Get</span>()
 async getMissions() {
   <span class="hljs-keyword">const</span> missionEntities = await <span class="hljs-keyword">this</span>.missionsService.getMissions();
@@ -113,7 +114,8 @@ Let&#39;s take a look at building one next.</p>
 </blockquote>
 <p>The <code>next.handle()</code> method is an observable stream that you can interact with like any other observable. Here, we use the <code>map</code> operator from RXJS to transform the output from one object to another. Specifically, we are using <code>classToPlain</code> to have <code>class-transformer</code> remove the excluded params from <code>MissionEntity</code>, just like the controller did earlier. </p>
 <p>We are also modifying the returned object to return an object that now has a <code>data</code> property on it, which contains the original response. Optionally, we can now return other properties the could be meta-data about the response, such as a request id or the time it took the request to complete.</p>
-<p>To use the <code>DataInterceptor</code>, Nest provides a few different options to bind it to a request. We can use the <code>@UseInterceptors</code> decorator and either put it on a class if we want it to apply to the entire controller like so:</p>
+<p>To use the <code>DataInterceptor</code>, Nest provides a few different options to bind it to a request. </p>
+<p>We can use the <code>@UseInterceptors</code> decorator and either put it on a class if we want it to apply to the entire controller like so:</p>
 <pre class="hljs"><code><span class="hljs-meta">@UseInterceptors</span>(DataInterceptor)
 <span class="hljs-meta">@Controller</span>(<span class="hljs-string">'missions'</span>)
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> MissionsController { ... }</code></pre><p>Alternatively, we can be more selective and put it only on the route handlers we want:</p>
@@ -134,7 +136,8 @@ async getMissions() { ... }</code></pre><p>A third option allows us to apply the
 <p>Now that we have mission data returning from our API let&#39;s consume it from our Ionic app.</p>
 <h3 id="mission-interface"><a class="header-link" href="#mission-interface"></a>Mission Interface</h3>
 <p>We want to use a common model between our server and client to represent a Mission. However, we don&#39;t want to use the MissionEntity as that has member variables that aren&#39;t returned via the API (the <code>createdAt</code> and <code>createdBy</code> members) and it also has a dependency on the <code>class-transformer</code> library, which we don&#39;t want to import into our client app if we don&#39;t need to. Therefore, we create a lightweight mission interface that can be used from both our front and back ends.</p>
-<p>There is a <code>Mission</code> interface already defined in the shared folder at <code>src/shared/models/mission.model.ts</code>:</p>
+<p>There is a <code>Mission</code> interface already defined in the shared folder:</p>
+<p> <code>src/shared/models/mission.model.ts</code></p>
 <pre class="hljs"><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> Mission {
   id?: <span class="hljs-built_in">number</span>;
   title: <span class="hljs-built_in">string</span>;
@@ -202,6 +205,7 @@ async getMissions() { ... }</code></pre><p>A third option allows us to apply the
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.missionsRepository.get(id);
 }</code></pre><p><copy-button></copy-button></p>
 <p>Update the <code>MissionController</code> to call into this new service method:</p>
+<!-- gsr-nest-missions-controller-getmission -->
 <p><code>src/server/app/missions/missions.controller.ts</code></p>
 <pre class="hljs"><code><span class="hljs-meta">@Get</span>(<span class="hljs-string">':id'</span>)
 async getMission(<span class="hljs-meta">@Param</span>(<span class="hljs-string">'id'</span>) id: <span class="hljs-built_in">number</span>) {
@@ -218,6 +222,9 @@ async getMission(<span class="hljs-meta">@Param</span>(<span class="hljs-string"
 <p><code>src/server/app/util/data.pipe.ts</code></p>
 <pre class="hljs"><code>transform(value: <span class="hljs-built_in">any</span>, metadata: ArgumentMetadata) {
   <span class="hljs-keyword">const</span> { metatype } = metadata;
+  <span class="hljs-keyword">if</span> (!metatype) {
+    <span class="hljs-keyword">return</span> value;
+  }
   <span class="hljs-keyword">const</span> convertedValue = plainToClass(metatype, value);
   <span class="hljs-keyword">return</span> convertedValue;
 }</code></pre><p><copy-button></copy-button></p>
@@ -249,7 +256,7 @@ async getMission(<span class="hljs-meta">@Param</span>(<span class="hljs-string"
     <span class="hljs-keyword">this</span>.mission$ = of({ active: <span class="hljs-literal">false</span> } as <span class="hljs-built_in">any</span>);
   }
 }</code></pre><p><copy-button></copy-button></p>
-<p>The mission form template is a simple Ionic page displays a the details of the mission in a form with a few text inputs and a switch button. The template is already filled out in the starter app, but here it is for your reference:</p>
+<p>The mission form template is a simple Ionic page that displays the details of the mission in a form. The template is already filled out in the starter app, but here it is for your reference:</p>
 <p><code>src/client/app/mission-form/mission-form.component.html</code></p>
 <pre class="hljs"><code><span class="hljs-tag">&lt;<span class="hljs-name">ion-header</span>&gt;</span>
   <span class="hljs-tag">&lt;<span class="hljs-name">ion-toolbar</span>&gt;</span>
@@ -289,7 +296,7 @@ async getMission(<span class="hljs-meta">@Param</span>(<span class="hljs-string"
     <span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span>
   <span class="hljs-tag">&lt;/<span class="hljs-name">ion-list</span>&gt;</span>
 <span class="hljs-tag">&lt;/<span class="hljs-name">ion-content</span>&gt;</span></code></pre><h3 id="update-mission-list-to-open-mission"><a class="header-link" href="#update-mission-list-to-open-mission"></a>Update Mission List to Open Mission</h3>
-<p>We open an Ionic modal and display the <code>MissionForm</code> when a user clicks on one of the missions in the list. </p>
+<p>We open an Ionic modal and display the <code>MissionForm</code> when a user clicks on a mission in the list. </p>
 <p>Update the <code>HomePage</code>file to add the <code>openMission</code> method:</p>
 <!-- gsr-ng-home-page-openmission -->
 <p><code>src/client/app/home/home.page.ts</code></p>
@@ -500,10 +507,11 @@ deleteMission(mission: Mission) {
 }</code></pre><blockquote>
 <p><code>ValidationPipe</code> is imported from &#39;@nestjs/common`.</p>
 </blockquote>
+<p>Now that you have validation decorators on <code>MissionEntity</code>, the Nest <code>ValidationPipe</code> will return a bad request error with a list of the messages that caused the error. Next, we will parse those errors on the client and display a better error dialog to the user.</p>
 <h3 id="update-angular-mission-service-to-process-validation-errors"><a class="header-link" href="#update-angular-mission-service-to-process-validation-errors"></a>Update Angular Mission Service to Process Validation Errors</h3>
-<p>Now when an invalid mission is submitted, the API will through a validation error with helpful data around why the error happened. Let&#39;s use that error to construct a message to show the user.</p>
+<p>When a user tries to create or update a mission and does not provide a title or reward, the API will now throw a bad request status. We need to parse that error response in the service.</p>
 <p>In the <strong>client</strong> <code>MissionService</code> add a <code>handleError</code> method that the HTTP responses can use to parse the validation error into a single string:</p>
-<!--gsr-ng-missions-service-handleerror -->
+<!-- gsr-ng-missions-service-handleerror -->
 <p><code>src/client/app/services/missions.service.ts</code></p>
 <pre class="hljs"><code>handleError(response: <span class="hljs-built_in">any</span>) {
   <span class="hljs-keyword">const</span> { error } = response;
@@ -528,7 +536,9 @@ deleteMission(mission: Mission) {
 <blockquote>
 <p>Make sure to update <code>updateMission</code> and <code>deleteMission</code> as well.</p>
 </blockquote>
-<p>Now, when you submit an invalid form, you get a proper 400 error back. In this example, we loop through the error objects and construct a string showing all the validation issues, but you could do a lot more with it. The errors contain the validation rule that caused the error and the property for which the validation was applied to, so you could go fancier in showing the errors than a simple alert modal.</p>
+<p>Now, when you submit an invalid form, you get a proper 400 Bad Request error response. In this example, we loop through the error objects and construct a string showing all the validation issues, but you could do a lot more with it. The errors contain the validation rule that caused the error and the property for which the validation was applied to, so you could go fancier in showing the errors than a simple alert modal.</p>
+<h3 id="lab-3-bonus-exercise"><a class="header-link" href="#lab-3-bonus-exercise"></a>Lab 3 Bonus Exercise</h3>
+<p>Explore some of the other class validator decorators to add more validation logic to the <code>MissionEntity</code> class. For instance, try the <code>@Min</code> decorator on <code>reward</code> to make the minimum value of reward be greater than or equal to 0. View a list of the available decorators <a href="https://github.com/typestack/class-validator#validation-decorators">here</a>.</p>
 <h2 id="lab-4"><a class="header-link" href="#lab-4"></a>Lab 4</h2>
 <blockquote>
 <p>To start fresh at lab4, you can checkout the lab4-start branch in git</p>
@@ -544,6 +554,7 @@ deleteMission(mission: Mission) {
 </ul>
 <h3 id="nest-roles-decorator"><a class="header-link" href="#nest-roles-decorator"></a>Nest Roles Decorator</h3>
 <p>In our base project, we have a <code>Roles</code> decorator that we can use on our controller methods to specify which roles we want the upcoming auth guard to check. </p>
+<p>The decorator was created with the Nest CLI, and out of the box does everything we need it to do.</p>
 <p>To specify which roles we want a route handler to check for access, we use <code>@Roles(&#39;...&#39;)</code> on each of the controller&#39;s methods. In <code>MissionsController</code> add <code>@Roles</code> and specify the role to the following methods:</p>
 <p><code>src/server/app/missions/missions.controller.ts</code></p>
 <pre class="hljs"><code><span class="hljs-meta">@Post</span>()
@@ -556,8 +567,7 @@ async updateMission(...) { ... }
 
 <span class="hljs-meta">@Delete</span>(<span class="hljs-string">':id'</span>)
 <span class="hljs-meta">@Roles</span>(<span class="hljs-string">'admin'</span>)
-async deleteMission(...) { ... }</code></pre><p><copy-button></copy-button></p>
-<h3 id="nest-guards"><a class="header-link" href="#nest-guards"></a>Nest Guards</h3>
+async deleteMission(...) { ... }</code></pre><h3 id="nest-guards"><a class="header-link" href="#nest-guards"></a>Nest Guards</h3>
 <p>Open the <strong>server</strong> <code>AuthGuard</code> file, and replace the class&#39;s <code>canActivate</code> method with the following:</p>
 <!-- gsr-nest-auth-guard-canactivate -->
 <p><code>src/server/app/util/auth.guard.ts</code></p>
