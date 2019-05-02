@@ -11,9 +11,14 @@ import { map } from 'rxjs/operators';
 @Injectable()
 export class DataInterceptor implements NestInterceptor {
 intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+
+  const startTime = Date.now();
   return next.handle().pipe(
     map(data => {
+      const endTime = Date.now();
+      const elapsed = endTime - startTime;
       return {
+        elapsed,
         data: classToPlain(data)
       };
     })
