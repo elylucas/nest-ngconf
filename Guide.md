@@ -836,6 +836,10 @@ createMission(mission: Mission) {
 
 Now, when you submit an invalid form, you get a proper 400 Bad Request error response. In this example, we loop through the error objects and construct a string showing all the validation issues, but you could do a lot more with it. The errors contain the validation rule that caused the error and the property for which the validation was applied to, so you could go fancier in showing the errors than a simple alert modal.
 
+### Lab 3 Bonus Exercise
+
+Explore some of the other class validator decorators to add more validation logic to the `MissionEntity` class. For instance, try the `@Min` decorator on `reward` to make the minimum value of reward be greater than or equal to 0. View a list of the available decorators [here](https://github.com/typestack/class-validator#validation-decorators).
+
 ## Lab 4
 
 > To start fresh at lab4, you can checkout the lab4-start branch in git
