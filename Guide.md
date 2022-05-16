@@ -486,7 +486,7 @@ async openMission(mission: Mission) {
   await modal.present();
   const { data = {} } = await modal.onDidDismiss();
   if (data.refreshMissions) {
-    this.missions = this.missionsService.getMissions();
+    this.missions$ = this.missionsService.getMissions$();
   }
 }
 ```
